@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>판재 주문 계산기</title>
+<style>
+  :root{--bg:#fafafa;--card:#fff;--line:#e5e7eb;--text:#111;--muted:#6b7280;--accent:#2563eb;--ok:#16a34a;--warn:#dc2626}
+  *{box-sizing:border-box} body{margin:0;font-family:-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;background:var(--bg);color:var(--text)}
+  header{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);padding:10px 14px;z-index:5}
+  header h1{font-size:17px;margin:0 0 6px} .upd{font-size:12px;color:var(--muted)}
+  .tabs{display:flex;gap:6px;margin-top:8px;overflow-x:auto} .tabs button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;white-space:nowrap}
+  .tabs button.on{background:var(--text);color:#fff;border-color:var(--text)}
+  main{padding:10px 12px 140px;max-width:760px;margin:0 auto}
+  .item{display:grid;grid-template-columns:64px 1fr auto;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px}
+  .ph{width:64px;height:64px;border-radius:8px;background:#eee;object-fit:cover;display:block}
+  .nm{font-weight:700;font-size:15px} .sp{font-size:12px;color:var(--muted);margin-top:2px}
+  .pr{font-size:14px;margin-top:4px} .st{font-size:12px} .st.low{color:var(--warn)} .st.ok{color:var(--ok)}
+  .qty{display:flex;align-items:center;gap:4px} .qty button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:#fff;font-size:18px}
+  .qty input{width:44px;height:34px;text-align:center;border:1px solid var(--line);border-radius:8px;font-size:15px}
+  .item.sel{border-color:var(--accent);box-shadow:0 0 0 2px #dbeafe}
+  footer{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:10px 14px;box-shadow:0 -4px 16px rgba(0,0,0,.06)}
+  .tot{display:flex;justify-content:space-between;align-items:baseline;max-width:760px;margin:0 auto}
+  .tot b{font-size:20px} .sub{font-size:12px;color:var(--muted)}
+  .btns{display:flex;gap:8px;max-width:760px;margin:8px auto 0} .btns button{flex:1;height:42px;border-radius:10px;border:none;font-size:15px;font-weight:700}
+  .btns .p{background:var(--accent);color:#fff} .btns .s{background:#f3f4f6}
+  dialog{border:none;border-radius:14px;padding:16px;width:min(92vw,520px)} dialog pre{white-space:pre-wrap;font-size:13px;background:#f8f8f8;padding:10px;border-radius:8px;max-height:50vh;overflow:auto}
+  .search{width:100%;height:36px;border:1px solid var(--line);border-radius:8px;padding:0 10px;font-size:14px;margin-top:8px}
+</style>
+</head>
+<body>
+<header>
+  <h1>판재 주문 계산기</h1>
+  <div class="upd" id="upd">재고 불러오는 중…</div>
+  <input class="search" id="q" placeholder="품목 검색 (예: 우드3, 패브릭7, 엣지)">
+  <div class="tabs" id="tabs"></div>
+</header>
+<main id="list"></main>
+<footer>
+  <div class="tot"><div><span class="sub">선택 <span id="cnt">0</span>품목 · 공급가 <span id="sup">0</span>원 · 부가세 <span id="vat">0</span>원</span></div><b id="total">0원</b></div>
+  <div class="btns"><button class="s" id="clear">비우기</button><button class="p" id="quote">견적 요청서 만들기</button></div>
+</footer>
+<dialog id="dlg"><h3 style="margin:0 0 8px">견적 요청서</h3><pre id="txt"></pre>
+  <div class="btns"><button class="s" onclick="dlg.close()">닫기</button><button class="p" id="copy">복사</button><button class="p" id="share">공유</button></div></dialog>
+<script>
+const fmt=n=>n.toLocaleString('ko-KR');
+let data=[],cart={},cat='전체';
+async function load(){
+  try{const r=await fetch('stock.json?'+Date.now());const j=await r.json();data=j.items;upd.textContent='재고 기준: '+j.updated+' (자동 갱신)';}
+  catch(e){upd.textContent='재고 정보를 불러오지 못했습니다.';}
+  const cats=['전체',...new Set(data.map(i=>i.category))];
+  tabs.innerHTML=cats.map(c=>`<button class="${c===cat?'on':''}" data-c="${c}">${c}</button>`).join('');
+  render();
+}
+function render(){
+  const q=document.getElementById('q').value.trim();
+  list.innerHTML=data.filter(i=>(cat==='전체'||i.category===cat)&&(!q||i.name.includes(q))).map(i=>{
+    const n=cart[i.name]||0, low=i.stock<=0;
+    return `<div class="item ${n?'sel':''}" data-n="${i.name}">
+      ${i.photo?`<img class="ph" src="${i.photo}" alt="">`:`<div class="ph"></div>`}
+      <div><div class="nm">${i.name}</div><div class="sp">${i.spec||''}</div>
+        <div class="pr">${fmt(i.price)}원 / ${i.unit}</div>
+        <div class="st ${low?'low':'ok'}">${low?'재고 없음 (입고 문의)':'현재고 '+i.stock+i.unit}</div></div>
+      <div class="qty"><button data-d="-1">−</button><input type="number" min="0" value="${n}"><button data-d="1">+</button></div></div>`}).join('');
+  total_();
+}
+function total_(){
+  let sup=0,cnt=0;for(const [k,v] of Object.entries(cart)){if(v>0){const it=data.find(i=>i.name===k);if(it){sup+=it.price*v;cnt++;}}}
+  const vat=Math.round(sup*0.1);sup_el(sup,vat,cnt);
+}
+function sup_el(s,v,c){document.getElementById('sup').textContent=fmt(s);document.getElementById('vat').textContent=fmt(v);document.getElementById('cnt').textContent=c;document.getElementById('total').textContent=fmt(s+v)+'원';}
+list.addEventListener('click',e=>{const b=e.target.closest('button[data-d]');if(!b)return;const n=b.closest('.item').dataset.n;const it=data.find(i=>i.name===n);
+  let v=(cart[n]||0)+Number(b.dataset.d);v=Math.max(0,v);if(it&&it.stock>0)v=Math.min(v,it.stock);cart[n]=v;render();});
+list.addEventListener('change',e=>{if(e.target.type==='number'){const n=e.target.closest('.item').dataset.n;cart[n]=Math.max(0,Number(e.target.value)||0);render();}});
+tabs.addEventListener('click',e=>{if(e.target.dataset.c){cat=e.target.dataset.c;[...tabs.children].forEach(b=>b.classList.toggle('on',b.dataset.c===cat));render();}});
+document.getElementById('q').addEventListener('input',render);
+clear.onclick=()=>{cart={};render();};
+quote.onclick=()=>{
+  const rows=Object.entries(cart).filter(([,v])=>v>0).map(([k,v])=>{const it=data.find(i=>i.name===k);return {k,v,it};});
+  if(!rows.length){alert('품목을 먼저 선택해 주세요.');return;}
+  let sup=0;const lines=rows.map(({k,v,it})=>{const a=it.price*v;sup+=a;return `- ${k} × ${v}${it.unit} = ${fmt(a)}원`;});
+  const vat=Math.round(sup*0.1);
+  txt.textContent=`[판재 견적 요청]\n${new Date().toLocaleDateString('ko-KR')}\n\n${lines.join('\n')}\n\n공급가 ${fmt(sup)}원\n부가세 ${fmt(vat)}원\n합계 ${fmt(sup+vat)}원\n(배송비 별도 · 재고 기준 ${upd.textContent.replace('재고 기준: ','')})\n\n업체명:\n담당자/연락처:\n배송지:`;
+  dlg.showModal();
+};
+copy.onclick=async()=>{try{await navigator.clipboard.writeText(txt.textContent);copy.textContent='복사됨';setTimeout(()=>copy.textContent='복사',1500);}catch(e){alert('길게 눌러 복사해 주세요.');}};
+share.onclick=()=>{if(navigator.share)navigator.share({text:txt.textContent});else copy.onclick();};
+load();
+</script>
+</body>
+</html>
