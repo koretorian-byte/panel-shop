@@ -56,7 +56,7 @@
 <script>
 const fmt=n=>n.toLocaleString('ko-KR');
 // ▼ 요청 자동 접수용 서버 주소 (Cloudflare Worker). 비워두면 '요청 보내기' 대신 복사/공유만 가능.
-const ENDPOINT='';
+const ENDPOINT='https://panel-order.ws-kim.workers.dev/';
 let lastRows=[];
 let data=[],cart={},cat='전체';
 async function load(){
