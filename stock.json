@@ -1,9 +1,9 @@
 {
- "updated": "2026-09-03 06:03",
+ "updated": "2026-09-03 06:16",
  "items": [
   {
    "name": "우드1 10T 단면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "10T 1220x3000 단면",
    "unit": "장",
    "price": 80000,
@@ -12,7 +12,7 @@
   },
   {
    "name": "우드1 19T 양면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "19T 1220x2440 양면",
    "unit": "장",
    "price": 80000,
@@ -21,7 +21,7 @@
   },
   {
    "name": "우드10 10T 단면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "10T 1220x3000 단면",
    "unit": "장",
    "price": 80000,
@@ -30,7 +30,7 @@
   },
   {
    "name": "우드10 19T 양면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "19T 1220x2440 양면",
    "unit": "장",
    "price": 80000,
@@ -39,7 +39,7 @@
   },
   {
    "name": "우드11 10T 단면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "10T 1220x3000 단면",
    "unit": "장",
    "price": 80000,
@@ -48,7 +48,7 @@
   },
   {
    "name": "우드11 19T 양면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "19T 1220x2440 양면",
    "unit": "장",
    "price": 80000,
@@ -57,7 +57,7 @@
   },
   {
    "name": "우드12 10T 단면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "10T 1220x3000 단면",
    "unit": "장",
    "price": 80000,
@@ -66,7 +66,7 @@
   },
   {
    "name": "우드12 19T 양면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "19T 1220x2440 양면",
    "unit": "장",
    "price": 80000,
@@ -75,7 +75,7 @@
   },
   {
    "name": "우드2 10T 단면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "10T 1220x3000 단면",
    "unit": "장",
    "price": 80000,
@@ -84,7 +84,7 @@
   },
   {
    "name": "우드2 19T 양면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "19T 1220x2440 양면",
    "unit": "장",
    "price": 80000,
@@ -93,7 +93,7 @@
   },
   {
    "name": "우드3 10T 단면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "10T 1220x3000 단면",
    "unit": "장",
    "price": 80000,
@@ -102,7 +102,7 @@
   },
   {
    "name": "우드3 19T 양면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "19T 1220x2440 양면",
    "unit": "장",
    "price": 80000,
@@ -111,7 +111,7 @@
   },
   {
    "name": "우드4 10T 단면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "10T 1220x3000 단면",
    "unit": "장",
    "price": 80000,
@@ -120,7 +120,7 @@
   },
   {
    "name": "우드4 19T 양면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "19T 1220x2440 양면",
    "unit": "장",
    "price": 80000,
@@ -129,7 +129,7 @@
   },
   {
    "name": "우드5 10T 단면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "10T 1220x3000 단면",
    "unit": "장",
    "price": 80000,
@@ -138,7 +138,7 @@
   },
   {
    "name": "우드5 19T 양면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "19T 1220x2440 양면",
    "unit": "장",
    "price": 80000,
@@ -147,7 +147,7 @@
   },
   {
    "name": "우드6 10T 단면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "10T 1220x3000 단면",
    "unit": "장",
    "price": 80000,
@@ -156,7 +156,7 @@
   },
   {
    "name": "우드6 19T 양면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "19T 1220x2440 양면",
    "unit": "장",
    "price": 80000,
@@ -165,7 +165,7 @@
   },
   {
    "name": "우드7 10T 단면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "10T 1220x3000 단면",
    "unit": "장",
    "price": 80000,
@@ -174,7 +174,7 @@
   },
   {
    "name": "우드7 19T 양면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "19T 1220x2440 양면",
    "unit": "장",
    "price": 80000,
@@ -183,7 +183,7 @@
   },
   {
    "name": "우드8 10T 단면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "10T 1220x3000 단면",
    "unit": "장",
    "price": 80000,
@@ -192,7 +192,7 @@
   },
   {
    "name": "우드8 19T 양면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "19T 1220x2440 양면",
    "unit": "장",
    "price": 80000,
@@ -201,7 +201,7 @@
   },
   {
    "name": "우드9 10T 단면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "10T 1220x3000 단면",
    "unit": "장",
    "price": 80000,
@@ -210,7 +210,7 @@
   },
   {
    "name": "우드9 19T 양면",
-   "category": "우드",
+   "category": "우드보드",
    "spec": "19T 1220x2440 양면",
    "unit": "장",
    "price": 80000,
@@ -651,7 +651,7 @@
   },
   {
    "name": "패브릭1",
-   "category": "패브릭",
+   "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
@@ -660,7 +660,7 @@
   },
   {
    "name": "패브릭10",
-   "category": "패브릭",
+   "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
@@ -669,7 +669,7 @@
   },
   {
    "name": "패브릭11",
-   "category": "패브릭",
+   "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
@@ -678,7 +678,7 @@
   },
   {
    "name": "패브릭12",
-   "category": "패브릭",
+   "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
@@ -687,7 +687,7 @@
   },
   {
    "name": "패브릭13",
-   "category": "패브릭",
+   "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
@@ -696,7 +696,7 @@
   },
   {
    "name": "패브릭14",
-   "category": "패브릭",
+   "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
@@ -705,7 +705,7 @@
   },
   {
    "name": "패브릭15",
-   "category": "패브릭",
+   "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
@@ -714,7 +714,7 @@
   },
   {
    "name": "패브릭16",
-   "category": "패브릭",
+   "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
@@ -723,7 +723,7 @@
   },
   {
    "name": "패브릭17",
-   "category": "패브릭",
+   "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
@@ -732,7 +732,7 @@
   },
   {
    "name": "패브릭18",
-   "category": "패브릭",
+   "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
@@ -741,7 +741,7 @@
   },
   {
    "name": "패브릭19",
-   "category": "패브릭",
+   "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
@@ -750,7 +750,7 @@
   },
   {
    "name": "패브릭2",
-   "category": "패브릭",
+   "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
@@ -759,7 +759,7 @@
   },
   {
    "name": "패브릭20",
-   "category": "패브릭",
+   "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
@@ -768,7 +768,7 @@
   },
   {
    "name": "패브릭3",
-   "category": "패브릭",
+   "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
@@ -777,7 +777,7 @@
   },
   {
    "name": "패브릭4",
-   "category": "패브릭",
+   "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
@@ -786,7 +786,7 @@
   },
   {
    "name": "패브릭5",
-   "category": "패브릭",
+   "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
@@ -795,7 +795,7 @@
   },
   {
    "name": "패브릭6",
-   "category": "패브릭",
+   "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
@@ -804,7 +804,7 @@
   },
   {
    "name": "패브릭7",
-   "category": "패브릭",
+   "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
@@ -813,7 +813,7 @@
   },
   {
    "name": "패브릭8",
-   "category": "패브릭",
+   "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
@@ -822,7 +822,7 @@
   },
   {
    "name": "패브릭9",
-   "category": "패브릭",
+   "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
