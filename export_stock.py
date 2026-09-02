@@ -37,7 +37,7 @@ def main():
                       "unit": "롤" if cat == "우드 엣지" else "장",
                       "price": get_number(pg, "판매가") or 0,
                       "stock": get_number(pg, "현재고") or 0, "photo": photo})
-    order = {"우드": 0, "우드보드": 0, "우드 엣지": 1, "패브릭": 2}
+    order = {"우드": 0, "우드보드": 0, "우드 엣지": 1, "패브릭": 2, "패브릭 보드": 2}
     items.sort(key=lambda i: (order.get(i["category"], 9), i["name"]))
     with open("stock.json", "w", encoding="utf-8") as f:
         json.dump({"updated": dt.datetime.now(KST).strftime("%Y-%m-%d %H:%M"), "items": items}, f, ensure_ascii=False, indent=1)
