@@ -26,6 +26,9 @@
   .btns .p{background:var(--accent);color:#fff} .btns .s{background:#f3f4f6}
   dialog{border:none;border-radius:14px;padding:16px;width:min(92vw,520px)} dialog pre{white-space:pre-wrap;font-size:13px;background:#f8f8f8;padding:10px;border-radius:8px;max-height:50vh;overflow:auto}
   .search{width:100%;height:36px;border:1px solid var(--line);border-radius:8px;padding:0 10px;font-size:14px;margin-top:8px}
+  .frm{display:grid;gap:6px;margin-bottom:8px} .frm input{height:38px;border:1px solid var(--line);border-radius:8px;padding:0 10px;font-size:14px}
+  .msg{font-size:13px;min-height:18px;margin:4px 0} .msg.ok{color:var(--ok)} .msg.err{color:var(--warn)}
+  dialog pre{max-height:32vh}
 </style>
 </head>
 <body>
@@ -38,12 +41,23 @@
 <main id="list"></main>
 <footer>
   <div class="tot"><div><span class="sub">선택 <span id="cnt">0</span>품목 · 공급가 <span id="sup">0</span>원 · 부가세 <span id="vat">0</span>원</span></div><b id="total">0원</b></div>
-  <div class="btns"><button class="s" id="clear">비우기</button><button class="p" id="quote">견적 요청서 만들기</button></div>
+  <div class="btns"><button class="s" id="clear">비우기</button><button class="s" id="quote">견적서만 보기</button><button class="p" id="order">접수하기</button></div>
 </footer>
-<dialog id="dlg"><h3 style="margin:0 0 8px">견적 요청서</h3><pre id="txt"></pre>
-  <div class="btns"><button class="s" onclick="dlg.close()">닫기</button><button class="p" id="copy">복사</button><button class="p" id="share">공유</button></div></dialog>
+<dialog id="dlg"><h3 style="margin:0 0 8px" id="dtitle">견적서</h3>
+  <div class="frm" id="frm">
+    <input id="f_company" placeholder="업체명 *">
+    <input id="f_contact" placeholder="담당자 / 연락처 *">
+    <input id="f_addr" placeholder="배송지">
+    <input id="f_note" placeholder="요청사항 (납기, 문의 등)">
+  </div>
+  <pre id="txt"></pre>
+  <div id="msg" class="msg"></div>
+  <div class="btns"><button class="s" onclick="dlg.close()">닫기</button><button class="s" id="copy">복사</button><button class="s" id="share">공유</button><button class="p" id="send">접수하기</button></div></dialog>
 <script>
 const fmt=n=>n.toLocaleString('ko-KR');
+// ▼ 요청 자동 접수용 서버 주소 (Cloudflare Worker). 비워두면 '요청 보내기' 대신 복사/공유만 가능.
+const ENDPOINT='';
+let lastRows=[];
 let data=[],cart={},cat='전체';
 async function load(){
   try{const r=await fetch('stock.json?'+Date.now());const j=await r.json();data=j.items;upd.textContent='재고 기준: '+j.updated+' (자동 갱신)';}
@@ -75,13 +89,38 @@ list.addEventListener('change',e=>{if(e.target.type==='number'){const n=e.target
 tabs.addEventListener('click',e=>{if(e.target.dataset.c){cat=e.target.dataset.c;[...tabs.children].forEach(b=>b.classList.toggle('on',b.dataset.c===cat));render();}});
 document.getElementById('q').addEventListener('input',render);
 clear.onclick=()=>{cart={};render();};
-quote.onclick=()=>{
+function openDlg(mode){
   const rows=Object.entries(cart).filter(([,v])=>v>0).map(([k,v])=>{const it=data.find(i=>i.name===k);return {k,v,it};});
   if(!rows.length){alert('품목을 먼저 선택해 주세요.');return;}
-  let sup=0;const lines=rows.map(({k,v,it})=>{const a=it.price*v;sup+=a;return `- ${k} × ${v}${it.unit} = ${fmt(a)}원`;});
-  const vat=Math.round(sup*0.1);
-  txt.textContent=`[판재 견적 요청]\n${new Date().toLocaleDateString('ko-KR')}\n\n${lines.join('\n')}\n\n공급가 ${fmt(sup)}원\n부가세 ${fmt(vat)}원\n합계 ${fmt(sup+vat)}원\n(배송비 별도 · 재고 기준 ${upd.textContent.replace('재고 기준: ','')})\n\n업체명:\n담당자/연락처:\n배송지:`;
-  dlg.showModal();
+  lastRows=rows;msg.textContent='';msg.className='msg';
+  const submit=mode==='order';
+  document.getElementById('dtitle').textContent=submit?'접수 요청':'견적서';
+  document.getElementById('frm').hidden=!submit;
+  const b=document.getElementById('send');b.hidden=!submit;b.disabled=false;b.textContent='접수하기';
+  if(submit&&!ENDPOINT){msg.className='msg err';msg.textContent='온라인 접수가 아직 연결되지 않았습니다. 아래 내용을 복사/공유로 보내주세요.';b.hidden=true;}
+  buildText();dlg.showModal();
+}
+quote.onclick=()=>openDlg('quote');
+document.getElementById('order').onclick=()=>openDlg('order');
+function buildText(){
+  let sup=0;const lines=lastRows.map(({k,v,it})=>{const a=it.price*v;sup+=a;return `- ${k} × ${v}${it.unit} = ${fmt(a)}원`;});
+  const vat=Math.round(sup*0.1);const g=id=>document.getElementById(id).value.trim();
+  const head=document.getElementById('frm').hidden?'':`업체명: ${g('f_company')}\n담당자/연락처: ${g('f_contact')}\n배송지: ${g('f_addr')}\n요청사항: ${g('f_note')}\n\n`;
+  txt.textContent=`[판재 견적] ${new Date().toLocaleDateString('ko-KR')}\n${head}${lines.join('\n')}\n\n공급가 ${fmt(sup)}원\n부가세 ${fmt(vat)}원\n합계 ${fmt(sup+vat)}원\n(배송비 별도 · 재고 기준 ${upd.textContent.replace('재고 기준: ','')})`;
+}
+['f_company','f_contact','f_addr','f_note'].forEach(id=>document.getElementById(id).addEventListener('input',buildText));
+document.getElementById('send').onclick=async()=>{
+  const g=id=>document.getElementById(id).value.trim();
+  if(!g('f_company')||!g('f_contact')){msg.className='msg err';msg.textContent='업체명과 담당자/연락처를 입력해 주세요.';return;}
+  const b=document.getElementById('send');b.disabled=true;b.textContent='접수 중…';
+  try{
+    const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      company:g('f_company'),contact:g('f_contact'),address:g('f_addr'),note:g('f_note'),
+      items:lastRows.map(({k,v,it})=>({name:k,qty:v,unit:it.unit,price:it.price})),text:txt.textContent})});
+    const j=await r.json();
+    if(!r.ok||!j.ok)throw new Error(j.error||r.status);
+    msg.className='msg ok';msg.textContent='접수되었습니다. 담당자가 확인 후 연락드립니다.';b.textContent='접수 완료';
+  }catch(e){msg.className='msg err';msg.textContent='전송 실패: '+e.message+' — 아래 복사/공유로 보내주세요.';b.disabled=false;b.textContent='접수하기';}
 };
 copy.onclick=async()=>{try{await navigator.clipboard.writeText(txt.textContent);copy.textContent='복사됨';setTimeout(()=>copy.textContent='복사',1500);}catch(e){alert('길게 눌러 복사해 주세요.');}};
 share.onclick=()=>{if(navigator.share)navigator.share({text:txt.textContent});else copy.onclick();};
