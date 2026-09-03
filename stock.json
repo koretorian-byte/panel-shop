@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-03 20:16",
+ "updated": "2026-09-03 20:41",
  "items": [
   {
    "name": "우드1 10T 단면",
@@ -659,12 +659,30 @@
    "photo": ""
   },
   {
+   "name": "패브릭1 보드 10T",
+   "category": "패브릭 보드",
+   "spec": "10T 1220x3000",
+   "unit": "장",
+   "price": 120000,
+   "stock": 0,
+   "photo": ""
+  },
+  {
    "name": "패브릭10",
    "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
    "stock": 18,
+   "photo": ""
+  },
+  {
+   "name": "패브릭10 보드 10T",
+   "category": "패브릭 보드",
+   "spec": "10T 1220x3000",
+   "unit": "장",
+   "price": 120000,
+   "stock": 0,
    "photo": ""
   },
   {
@@ -677,12 +695,30 @@
    "photo": ""
   },
   {
+   "name": "패브릭11 보드 10T",
+   "category": "패브릭 보드",
+   "spec": "10T 1220x3000",
+   "unit": "장",
+   "price": 120000,
+   "stock": 0,
+   "photo": ""
+  },
+  {
    "name": "패브릭12",
    "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
    "stock": 32,
+   "photo": ""
+  },
+  {
+   "name": "패브릭12 보드 10T",
+   "category": "패브릭 보드",
+   "spec": "10T 1220x3000",
+   "unit": "장",
+   "price": 120000,
+   "stock": 0,
    "photo": ""
   },
   {
@@ -695,12 +731,30 @@
    "photo": ""
   },
   {
+   "name": "패브릭13 보드 10T",
+   "category": "패브릭 보드",
+   "spec": "10T 1220x3000",
+   "unit": "장",
+   "price": 120000,
+   "stock": 0,
+   "photo": ""
+  },
+  {
    "name": "패브릭14",
    "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
    "stock": 60,
+   "photo": ""
+  },
+  {
+   "name": "패브릭14 보드 10T",
+   "category": "패브릭 보드",
+   "spec": "10T 1220x3000",
+   "unit": "장",
+   "price": 120000,
+   "stock": 0,
    "photo": ""
   },
   {
@@ -713,12 +767,30 @@
    "photo": ""
   },
   {
+   "name": "패브릭15 보드 10T",
+   "category": "패브릭 보드",
+   "spec": "10T 1220x3000",
+   "unit": "장",
+   "price": 120000,
+   "stock": 0,
+   "photo": ""
+  },
+  {
    "name": "패브릭16",
    "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
    "stock": 64,
+   "photo": ""
+  },
+  {
+   "name": "패브릭16 보드 10T",
+   "category": "패브릭 보드",
+   "spec": "10T 1220x3000",
+   "unit": "장",
+   "price": 120000,
+   "stock": 0,
    "photo": ""
   },
   {
@@ -731,12 +803,30 @@
    "photo": ""
   },
   {
+   "name": "패브릭17 보드 10T",
+   "category": "패브릭 보드",
+   "spec": "10T 1220x3000",
+   "unit": "장",
+   "price": 120000,
+   "stock": 0,
+   "photo": ""
+  },
+  {
    "name": "패브릭18",
    "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
    "stock": 18,
+   "photo": ""
+  },
+  {
+   "name": "패브릭18 보드 10T",
+   "category": "패브릭 보드",
+   "spec": "10T 1220x3000",
+   "unit": "장",
+   "price": 120000,
+   "stock": 0,
    "photo": ""
   },
   {
@@ -749,12 +839,30 @@
    "photo": ""
   },
   {
+   "name": "패브릭19 보드 10T",
+   "category": "패브릭 보드",
+   "spec": "10T 1220x3000",
+   "unit": "장",
+   "price": 120000,
+   "stock": 0,
+   "photo": ""
+  },
+  {
    "name": "패브릭2",
    "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
    "stock": 85,
+   "photo": ""
+  },
+  {
+   "name": "패브릭2 보드 10T",
+   "category": "패브릭 보드",
+   "spec": "10T 1220x3000",
+   "unit": "장",
+   "price": 120000,
+   "stock": 0,
    "photo": ""
   },
   {
@@ -767,12 +875,30 @@
    "photo": ""
   },
   {
+   "name": "패브릭20 보드 10T",
+   "category": "패브릭 보드",
+   "spec": "10T 1220x3000",
+   "unit": "장",
+   "price": 120000,
+   "stock": 0,
+   "photo": ""
+  },
+  {
    "name": "패브릭3",
    "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
    "stock": 98,
+   "photo": ""
+  },
+  {
+   "name": "패브릭3 보드 10T",
+   "category": "패브릭 보드",
+   "spec": "10T 1220x3000",
+   "unit": "장",
+   "price": 120000,
+   "stock": 0,
    "photo": ""
   },
   {
@@ -785,12 +911,30 @@
    "photo": ""
   },
   {
+   "name": "패브릭4 보드 10T",
+   "category": "패브릭 보드",
+   "spec": "10T 1220x3000",
+   "unit": "장",
+   "price": 120000,
+   "stock": 0,
+   "photo": ""
+  },
+  {
    "name": "패브릭5",
    "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
    "stock": 16,
+   "photo": ""
+  },
+  {
+   "name": "패브릭5 보드 10T",
+   "category": "패브릭 보드",
+   "spec": "10T 1220x3000",
+   "unit": "장",
+   "price": 120000,
+   "stock": 0,
    "photo": ""
   },
   {
@@ -803,12 +947,30 @@
    "photo": ""
   },
   {
+   "name": "패브릭6 보드 10T",
+   "category": "패브릭 보드",
+   "spec": "10T 1220x3000",
+   "unit": "장",
+   "price": 120000,
+   "stock": 0,
+   "photo": ""
+  },
+  {
    "name": "패브릭7",
    "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
    "stock": 25,
+   "photo": ""
+  },
+  {
+   "name": "패브릭7 보드 10T",
+   "category": "패브릭 보드",
+   "spec": "10T 1220x3000",
+   "unit": "장",
+   "price": 120000,
+   "stock": 0,
    "photo": ""
   },
   {
@@ -821,12 +983,30 @@
    "photo": ""
   },
   {
+   "name": "패브릭8 보드 10T",
+   "category": "패브릭 보드",
+   "spec": "10T 1220x3000",
+   "unit": "장",
+   "price": 120000,
+   "stock": 0,
+   "photo": ""
+  },
+  {
    "name": "패브릭9",
    "category": "패브릭 보드",
    "spec": "",
    "unit": "장",
    "price": 60000,
    "stock": 77,
+   "photo": ""
+  },
+  {
+   "name": "패브릭9 보드 10T",
+   "category": "패브릭 보드",
+   "spec": "10T 1220x3000",
+   "unit": "장",
+   "price": 120000,
+   "stock": 0,
    "photo": ""
   }
  ]
