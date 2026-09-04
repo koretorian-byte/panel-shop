@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-04 13:18",
+ "updated": "2026-09-04 13:47",
  "items": [
   {
    "name": "우드1 10T 단면",
@@ -7,7 +7,7 @@
    "spec": "10T 1220x3000 단면",
    "unit": "장",
    "price": 80000,
-   "stock": 35,
+   "stock": 32,
    "photo": ""
   },
   {
@@ -16,7 +16,7 @@
    "spec": "19T 1220x2440 양면",
    "unit": "장",
    "price": 80000,
-   "stock": 22,
+   "stock": 12,
    "photo": ""
   },
   {
@@ -25,7 +25,7 @@
    "spec": "10T 1220x3000 단면",
    "unit": "장",
    "price": 80000,
-   "stock": 8,
+   "stock": 6,
    "photo": ""
   },
   {
@@ -34,7 +34,7 @@
    "spec": "19T 1220x2440 양면",
    "unit": "장",
    "price": 80000,
-   "stock": 48,
+   "stock": 41,
    "photo": ""
   },
   {
@@ -70,7 +70,7 @@
    "spec": "19T 1220x2440 양면",
    "unit": "장",
    "price": 80000,
-   "stock": 40,
+   "stock": 35,
    "photo": ""
   },
   {
@@ -88,7 +88,7 @@
    "spec": "19T 1220x2440 양면",
    "unit": "장",
    "price": 80000,
-   "stock": 55,
+   "stock": 43,
    "photo": ""
   },
   {
@@ -106,7 +106,7 @@
    "spec": "19T 1220x2440 양면",
    "unit": "장",
    "price": 80000,
-   "stock": 40,
+   "stock": 20,
    "photo": ""
   },
   {
@@ -142,7 +142,7 @@
    "spec": "19T 1220x2440 양면",
    "unit": "장",
    "price": 80000,
-   "stock": 3,
+   "stock": 0,
    "photo": ""
   },
   {
@@ -178,7 +178,7 @@
    "spec": "19T 1220x2440 양면",
    "unit": "장",
    "price": 80000,
-   "stock": 6,
+   "stock": 2,
    "photo": ""
   },
   {
@@ -250,7 +250,7 @@
    "spec": "50mm x 50m롤",
    "unit": "롤",
    "price": 15000,
-   "stock": 6,
+   "stock": 4,
    "photo": ""
   },
   {
@@ -655,7 +655,7 @@
    "spec": "",
    "unit": "장",
    "price": 60000,
-   "stock": 60,
+   "stock": 51,
    "photo": ""
   },
   {
@@ -691,7 +691,7 @@
    "spec": "",
    "unit": "장",
    "price": 60000,
-   "stock": 5,
+   "stock": 0,
    "photo": ""
   },
   {
@@ -889,7 +889,7 @@
    "spec": "",
    "unit": "장",
    "price": 60000,
-   "stock": 98,
+   "stock": 68,
    "photo": ""
   },
   {
@@ -925,7 +925,7 @@
    "spec": "",
    "unit": "장",
    "price": 60000,
-   "stock": 16,
+   "stock": 10,
    "photo": ""
   },
   {
@@ -979,7 +979,7 @@
    "spec": "",
    "unit": "장",
    "price": 60000,
-   "stock": 48,
+   "stock": 38,
    "photo": ""
   },
   {
