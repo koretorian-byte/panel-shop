@@ -1,0 +1,19 @@
+name: Worker 배포(panel-order)
+
+# worker.js 를 수정해 push 하면 Cloudflare 에 자동 배포됩니다.
+# 준비물(1회): 저장소 Settings → Secrets → CLOUDFLARE_API_TOKEN
+#   (Cloudflare 대시보드 → 내 프로필 → API 토큰 → 'Cloudflare Workers 편집' 템플릿으로 생성)
+on:
+  push:
+    branches: [main]
+    paths: ["worker.js", "wrangler.toml"]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

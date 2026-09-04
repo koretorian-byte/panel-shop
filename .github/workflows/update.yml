@@ -3,7 +3,7 @@ name: 재고 갱신(stock.json)
 on:
   workflow_dispatch:
   schedule:
-    - cron: "5 * * * *"   # 매시 05분 (Notion 외부 공개 재고 → stock.json)
+    - cron: "35 * * * *"   # 매시 35분 (panel-sync 가 20분에 외부 공개 재고를 갱신한 뒤 → stock.json)
 
 permissions:
   contents: write
