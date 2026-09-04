@@ -1,0 +1,7 @@
+# Cloudflare Worker(panel-order) 배포 설정 — GitHub Actions(deploy_worker.yml)가 worker.js 를 올릴 때 사용
+name = "panel-order"
+main = "worker.js"
+account_id = "29f2054f0c9fc2d88ede723fcfa92691"
+compatibility_date = "2024-09-01"
+workers_dev = true
+keep_vars = true   # 대시보드에서 넣은 변수(ALLOW_ORIGIN, SLACK_CHANNEL 등)와 Secret 은 그대로 유지

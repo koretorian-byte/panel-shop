@@ -49,6 +49,7 @@
     <input id="f_contact" placeholder="담당자 / 연락처 *">
     <input id="f_addr" placeholder="배송지">
     <input id="f_note" placeholder="요청사항 (납기, 문의 등)">
+    <input id="f_web" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
   </div>
   <pre id="txt"></pre>
   <div id="msg" class="msg"></div>
@@ -60,7 +61,7 @@ const ENDPOINT='https://panel-order.ws-kim.workers.dev/';
 let lastRows=[];
 let data=[],cart={},cat='전체';
 async function load(){
-  try{const r=await fetch('stock.json?'+Date.now());const j=await r.json();data=j.items;upd.textContent='재고 기준: '+j.updated+' (자동 갱신)';}
+  try{const r=await fetch('stock.json?'+Date.now(),{cache:'no-store'});const j=await r.json();data=j.items||[];upd.textContent='재고 기준: '+j.updated+' (자동 갱신)';}
   catch(e){upd.textContent='재고 정보를 불러오지 못했습니다.';}
   const cats=['전체',...new Set(data.map(i=>i.category))];
   tabs.innerHTML=cats.map(c=>`<button class="${c===cat?'on':''}" data-c="${c}">${c}</button>`).join('');
@@ -74,7 +75,7 @@ function render(){
       ${i.photo?`<img class="ph" src="${i.photo}" alt="">`:`<div class="ph"></div>`}
       <div><div class="nm">${i.name}</div><div class="sp">${i.spec||''}</div>
         <div class="pr">${fmt(i.price)}원 / ${i.unit}</div>
-        <div class="st ${low?'low':'ok'}">${low?'재고 없음 (입고 문의)':'현재고 '+i.stock+i.unit}</div></div>
+        <div class="st ${low?'low':'ok'}">${low?'재고 없음 · 입고 문의 가능':'현재고 '+i.stock+i.unit}</div></div>
       <div class="qty"><button data-d="-1">−</button><input type="number" min="0" value="${n}"><button data-d="1">+</button></div></div>`}).join('');
   total_();
 }
@@ -85,7 +86,7 @@ function total_(){
 function sup_el(s,v,c){document.getElementById('sup').textContent=fmt(s);document.getElementById('vat').textContent=fmt(v);document.getElementById('cnt').textContent=c;document.getElementById('total').textContent=fmt(s+v)+'원';}
 list.addEventListener('click',e=>{const b=e.target.closest('button[data-d]');if(!b)return;const n=b.closest('.item').dataset.n;const it=data.find(i=>i.name===n);
   let v=(cart[n]||0)+Number(b.dataset.d);v=Math.max(0,v);if(it&&it.stock>0)v=Math.min(v,it.stock);cart[n]=v;render();});
-list.addEventListener('change',e=>{if(e.target.type==='number'){const n=e.target.closest('.item').dataset.n;cart[n]=Math.max(0,Number(e.target.value)||0);render();}});
+list.addEventListener('change',e=>{if(e.target.type==='number'){const n=e.target.closest('.item').dataset.n;const it=data.find(i=>i.name===n);let v=Math.max(0,Math.floor(Number(e.target.value)||0));if(it&&it.stock>0)v=Math.min(v,it.stock);cart[n]=v;render();}});
 tabs.addEventListener('click',e=>{if(e.target.dataset.c){cat=e.target.dataset.c;[...tabs.children].forEach(b=>b.classList.toggle('on',b.dataset.c===cat));render();}});
 document.getElementById('q').addEventListener('input',render);
 clear.onclick=()=>{cart={};render();};
@@ -115,11 +116,12 @@ document.getElementById('send').onclick=async()=>{
   const b=document.getElementById('send');b.disabled=true;b.textContent='접수 중…';
   try{
     const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-      company:g('f_company'),contact:g('f_contact'),address:g('f_addr'),note:g('f_note'),
+      company:g('f_company'),contact:g('f_contact'),address:g('f_addr'),note:g('f_note'),website:g('f_web'),
       items:lastRows.map(({k,v,it})=>({name:k,qty:v,unit:it.unit,price:it.price})),text:txt.textContent})});
     const j=await r.json();
     if(!r.ok||!j.ok)throw new Error(j.error||r.status);
-    msg.className='msg ok';msg.textContent='접수되었습니다. 담당자가 확인 후 연락드립니다.';b.textContent='접수 완료';
+    msg.className='msg ok';msg.textContent='접수되었습니다 (접수번호 '+(j.project||'')+'). 담당자가 확인 후 연락드립니다.';b.textContent='접수 완료';
+    cart={};render();  // 같은 내용이 두 번 접수되지 않도록 비운다
   }catch(e){msg.className='msg err';msg.textContent='전송 실패: '+e.message+' — 아래 복사/공유로 보내주세요.';b.disabled=false;b.textContent="주문/접수하기";}
 };
 copy.onclick=async()=>{try{await navigator.clipboard.writeText(txt.textContent);copy.textContent='복사됨';setTimeout(()=>copy.textContent='복사',1500);}catch(e){alert('길게 눌러 복사해 주세요.');}};
