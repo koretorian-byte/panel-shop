@@ -68,6 +68,10 @@
   .frm select{height:38px;border:1px solid var(--line);border-radius:var(--r);padding:0 10px;font-size:14px;background:#fff;color:var(--text);width:100%;max-width:100%;min-width:0;text-overflow:ellipsis;white-space:nowrap;overflow:hidden}
   .msg{font-size:13px;min-height:18px;margin:4px 0} .msg.ok{color:var(--accent)} .msg.err{color:var(--warn)}
   .hint{font-size:12px;color:var(--muted);margin:0 0 8px}
+  dialog.pv{width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;border-radius:0;background:var(--bg);overflow:hidden} dialog.pv[open]{display:flex;flex-direction:column}
+  .pvbar{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);font-size:13px;background:var(--card);padding-top:calc(10px + env(safe-area-inset-top))} .pvbar .xbtn{position:static}
+  .pvbody{flex:1;overflow:auto;padding:12px;-webkit-overflow-scrolling:touch} .pvbody img{width:100%;height:auto;display:block;background:#fff;box-shadow:0 2px 12px rgba(36,35,33,.12)}
+  .pvacts{display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--line)} .pvacts button{flex:1;height:42px;border-radius:var(--r);border:1px solid transparent;font-size:14.5px;font-weight:500} .pvacts .p{background:var(--text);color:#fff} .pvacts .s{background:var(--soft);color:var(--text);border-color:var(--line)}
   .pdfrow{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;background:var(--soft);border:1px solid var(--line);border-radius:var(--r);padding:6px 8px 6px 10px;margin:0 0 6px} .pdfrow .ok{color:var(--muted)} .pdfrow .acts{display:flex;gap:6px} .pdfrow button{height:28px;padding:0 10px;font-size:12.5px;border:1px solid var(--accent);color:var(--accent);background:#fff;border-radius:var(--r)} .pdfrow button:hover{background:var(--accent);color:#fff}
   .shrt{display:none} .sbtn{display:none;border:1px solid var(--line);background:var(--card);border-radius:var(--r);width:32px;height:30px;font-size:14px}
   .tabwrap{position:relative}
@@ -357,7 +361,7 @@ async function makePdf(){
     const d=fr.contentDocument;d.open();d.write(quoteHtml(true));d.close();
     await new Promise(r=>{if(d.readyState==='complete')r();else fr.onload=r;setTimeout(r,1500);});
     await Promise.all([...d.images].map(im=>im.complete?null:new Promise(r=>{im.onload=im.onerror=r;})));
-    if(d.fonts&&d.fonts.ready)await d.fonts.ready;
+    if(d.fonts&&d.fonts.ready)await Promise.race([d.fonts.ready,new Promise(r=>setTimeout(r,1500))]);
     const ch=Math.max(d.body.scrollHeight,d.documentElement.scrollHeight);fr.style.height=ch+'px';
     const canvas=await html2canvas(d.body,{scale:2,useCORS:true,backgroundColor:'#ffffff',windowWidth:794,width:794,height:ch,windowHeight:ch,logging:false});
     const {jsPDF}=window.jspdf;const pdf=new jsPDF({unit:'mm',format:'a4',orientation:'portrait',compress:true});
@@ -371,39 +375,59 @@ async function makePdf(){
       pdf.addImage(c.toDataURL('image/jpeg',0.92),'JPEG',0,0,pw,h*pw/canvas.width);
       y+=h;page++;
     }
-    return pdf.output('blob');
+    return {blob:pdf.output('blob'),png:canvas.toDataURL('image/jpeg',0.9)};
   }finally{fr.remove();}
 }
 let lastPdf=null;
+const mobileUA=()=>/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)||isMobile();
 document.getElementById('pdf').onclick=async()=>{
   const b=document.getElementById('pdf');if(b.disabled)return;
   const now=new Date();const no=`Q${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
   const fname=`SOJAE_견적서_${no}.pdf`;
-  // 미리보기 탭은 클릭 직후(동기)에 열어야 팝업 차단에 걸리지 않음
-  const w=window.open('','_blank');
+  const mob=mobileUA();
+  // PC: 미리보기 탭은 클릭 직후(동기)에 열어야 팝업 차단에 걸리지 않음. 모바일: 새 탭 대신 페이지 안 미리보기(모바일 브라우저는 PDF 탭 표시가 제각각)
+  const w=mob?null:window.open('','_blank');
   if(w){try{w.document.write('<!doctype html><title>SOJAE 素材 견적서</title><body style="font-family:sans-serif;color:#6b6862;padding:40px;text-align:center">견적서 PDF를 만드는 중입니다…</body>');}catch(e){}}
   b.disabled=true;const label=b.textContent;b.textContent='PDF 만드는 중…';
   try{
-    const blob=await makePdf();
-    lastPdf={blob,name:fname,no};
-    const url=URL.createObjectURL(blob);
-    if(w)w.location.href=url;else downloadBlob(blob,fname);
+    const {blob,png}=await Promise.race([makePdf(),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),20000))]);
+    lastPdf={blob,name:fname,no,png};
+    if(w){w.location.href=URL.createObjectURL(blob);}
     showPdfRow();
+    if(mob)openPreview();
   }catch(e){
-    // 대체: 인쇄용 견적서 페이지를 그 탭에 띄우고 인쇄 → "PDF로 저장"
-    if(!w){alert('PDF를 만들지 못했습니다. 팝업을 허용한 뒤 다시 눌러 주세요.');}
-    else{w.document.open();w.document.write(quoteHtml());w.document.close();let printed=false;const go=()=>{if(printed)return;printed=true;try{w.focus();w.print();}catch(e2){}};w.onload=()=>setTimeout(go,400);setTimeout(go,1500);}
+    // 대체: 인쇄용 견적서 페이지 → 인쇄/PDF로 저장
+    if(w){w.document.open();w.document.write(quoteHtml());w.document.close();let printed=false;const go=()=>{if(printed)return;printed=true;try{w.focus();w.print();}catch(e2){}};w.onload=()=>setTimeout(go,400);setTimeout(go,1500);}
+    else{const w2=window.open('','_blank');if(w2){w2.document.open();w2.document.write(quoteHtml());w2.document.close();}else alert('PDF를 만들지 못했습니다. 잠시 후 다시 시도해 주세요.');}
   }finally{b.disabled=false;b.textContent=label;}
 };
+// 모바일 미리보기: 견적서 이미지를 전체 화면으로 보여주고 아래에 공유/다운로드
+function openPreview(){
+  if(!lastPdf)return;
+  let pv=document.getElementById('pv');
+  if(!pv){pv=document.createElement('dialog');pv.id='pv';pv.className='pv';document.body.appendChild(pv);}
+  const file=new File([lastPdf.blob],lastPdf.name,{type:'application/pdf'});
+  const canShare=!!(navigator.canShare&&navigator.canShare({files:[file]}));
+  pv.innerHTML=`<div class="pvbar"><span>📄 ${esc(lastPdf.name)}</span><button type="button" class="xbtn" id="pvClose" aria-label="닫기">×</button></div>
+    <div class="pvbody"><img src="${lastPdf.png}" alt="견적서 미리보기"></div>
+    <div class="pvacts">${canShare?'<button type="button" class="p" id="pvShare">공유하기</button>':''}<button type="button" class="${canShare?'s':'p'}" id="pvDl">PDF 다운로드</button></div>`;
+  if(!pv.open)pv.showModal();
+  const close=()=>pv.close();
+  document.getElementById('pvClose').onclick=close;
+  if(canShare)document.getElementById('pvShare').onclick=async()=>{try{await navigator.share({files:[file],title:'SOJAE 素材 견적서 '+lastPdf.no});}catch(e){if(e.name!=='AbortError')downloadBlob(lastPdf.blob,lastPdf.name);}};
+  document.getElementById('pvDl').onclick=()=>downloadBlob(lastPdf.blob,lastPdf.name);
+}
 // PDF를 만든 뒤 창 안에 "공유 / 다운로드" 줄을 보여준다 (공유는 버튼을 눌러야 열리는 OS 공유창)
 function showPdfRow(){
   const row=document.getElementById('pdfrow');if(!row||!lastPdf)return;
   const file=new File([lastPdf.blob],lastPdf.name,{type:'application/pdf'});
   const canShare=!!(navigator.canShare&&navigator.canShare({files:[file]}));
-  row.innerHTML=`<span>📄 ${esc(lastPdf.name)} <span class="ok">— 새 탭에서 미리보기</span></span><span class="acts">${canShare?'<button type="button" id="pdfShare">공유</button>':''}<button type="button" id="pdfDl">다운로드</button></span>`;
+  const mob=mobileUA();
+  row.innerHTML=`<span>📄 ${esc(lastPdf.name)}${mob?'':' <span class="ok">— 새 탭에서 미리보기</span>'}</span><span class="acts">${mob?'<button type="button" id="pdfPv">미리보기</button>':''}${canShare?'<button type="button" id="pdfShare">공유</button>':''}<button type="button" id="pdfDl">다운로드</button></span>`;
   row.hidden=false;
   if(canShare)document.getElementById('pdfShare').onclick=async()=>{try{await navigator.share({files:[file],title:'SOJAE 素材 견적서 '+lastPdf.no});}catch(e){if(e.name!=='AbortError')downloadBlob(lastPdf.blob,lastPdf.name);}};
   document.getElementById('pdfDl').onclick=()=>downloadBlob(lastPdf.blob,lastPdf.name);
+  if(mob)document.getElementById('pdfPv').onclick=openPreview;
 }
 function downloadBlob(blob,name){const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),30000);}
 load();
