@@ -59,9 +59,9 @@
   .btns .p{background:var(--text);color:#fff} .btns .p:hover{background:#000} .btns .s{background:var(--soft);color:var(--text);border-color:var(--line)} .btns .s:hover{border-color:var(--text)} .btns button:disabled{opacity:.5;cursor:default}
   dialog{border:1px solid var(--line);border-radius:6px;padding:16px;width:min(92vw,520px);background:var(--card);color:var(--text)} dialog::backdrop{background:rgba(36,35,33,.4)} dialog h3{font-weight:500;letter-spacing:-.01em}
   dialog pre{white-space:pre-wrap;font-size:13px;background:var(--soft);padding:10px;border-radius:var(--r);max-height:32vh;overflow:auto;margin:0 0 6px}
-  .frm{display:grid;gap:6px;margin-bottom:8px} .frm input{height:38px;border:1px solid var(--line);border-radius:var(--r);padding:0 10px;font-size:14px;background:#fff;color:var(--text)} .frm input:focus,.frm select:focus{outline:none;border-color:var(--accent)}
+  .frm{display:grid;gap:6px;margin-bottom:8px;min-width:0} .frm input{width:100%;min-width:0;height:38px;border:1px solid var(--line);border-radius:var(--r);padding:0 10px;font-size:14px;background:#fff;color:var(--text)} .frm input:focus,.frm select:focus{outline:none;border-color:var(--accent)}
   .frm input:invalid:not(:placeholder-shown){border-color:#d99a93}
-  .frm select{height:38px;border:1px solid var(--line);border-radius:var(--r);padding:0 10px;font-size:14px;background:#fff;color:var(--text)}
+  .frm select{height:38px;border:1px solid var(--line);border-radius:var(--r);padding:0 10px;font-size:14px;background:#fff;color:var(--text);width:100%;max-width:100%;min-width:0;text-overflow:ellipsis;white-space:nowrap;overflow:hidden}
   .msg{font-size:13px;min-height:18px;margin:4px 0} .msg.ok{color:var(--accent)} .msg.err{color:var(--warn)}
   .hint{font-size:12px;color:var(--muted);margin:0 0 8px}
   .shrt{display:none} .sbtn{display:none;border:1px solid var(--line);background:var(--card);border-radius:var(--r);width:32px;height:30px;font-size:14px}
@@ -139,7 +139,7 @@ const SHIP_NOTE='제주·도서벽지 제외 · 1톤 화물 기준(약 30장 초
 const shipSel=()=>SHIP.find(x=>x.id===document.getElementById('f_ship').value)||SHIP[0];
 const shipFee=()=>shipSel().fee;
 const shipTxt=()=>{const x=shipSel();return x.id==='COD'?'착불':x.label.split(' (')[0]+' '+fmt(x.fee)+'원';};
-document.getElementById('f_ship').innerHTML=SHIP.map(x=>`<option value="${x.id}">🚚 ${esc(x.label)}${x.fee?' — '+fmt(x.fee)+'원':''}</option>`).join('');
+document.getElementById('f_ship').innerHTML=SHIP.map(x=>{const [nm,rest]=esc(x.label).split(' (');return `<option value="${x.id}">🚚 ${nm}${x.fee?' '+fmt(x.fee)+'원':''}${rest?' · '+rest.replace(/\)$/,''):''}</option>`;}).join('');
 try{const sv=localStorage.getItem('ship');if(sv&&SHIP.some(x=>x.id===sv))document.getElementById('f_ship').value=sv;}catch(e){}
 document.getElementById('f_ship').addEventListener('change',()=>{try{localStorage.setItem('ship',document.getElementById('f_ship').value);}catch(e){}buildText();});
 const ORDER=['우드보드 19T','우드보드 10T','우드 엣지 24mm','우드 엣지 50mm','패브릭 보드 19T','패브릭 보드 10T'];
