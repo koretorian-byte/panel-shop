@@ -9,7 +9,7 @@
   :root{--bg:#fafafa;--card:#fff;--line:#e5e7eb;--text:#111;--muted:#6b7280;--accent:#2563eb;--ok:#16a34a;--warn:#dc2626}
   *{box-sizing:border-box} body{margin:0;font-family:-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;background:var(--bg);color:var(--text)}
   header{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);padding:10px 14px;z-index:5}
-  header h1{font-size:16px;margin:0} .brand{display:flex;align-items:center;gap:10px;margin-bottom:4px} .brand img{height:26px;width:auto} .upd{font-size:12px;color:var(--muted)}
+  header h1{font-size:16px;margin:0} .home{margin-left:auto;font-size:12px;color:var(--accent);text-decoration:none;border:1px solid #bfdbfe;background:#eff6ff;border-radius:999px;padding:4px 10px;white-space:nowrap} .brand{display:flex;align-items:center;gap:10px;margin-bottom:4px} .brand img{height:26px;width:auto} .upd{font-size:12px;color:var(--muted)}
   .tabs{display:flex;gap:6px;margin-top:8px;overflow-x:auto} .tabs button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;white-space:nowrap}
   .tabs button.on{background:var(--text);color:#fff;border-color:var(--text)}
   main{padding:10px 12px 140px;max-width:760px;margin:0 auto}
@@ -41,7 +41,7 @@
 </head>
 <body>
 <header>
-  <div class="brand"><img src="logo.png" alt="SOJAE 素材"><h1>판재 주문 계산기</h1></div>
+  <div class="brand"><img src="logo.png" alt="SOJAE 素材"><h1>판재 주문 계산기</h1><a class="home" id="homeLink" href="#" target="_blank" rel="noopener">🏠 홈페이지 보기 ↗</a></div>
   <div class="upd" id="upd">재고 불러오는 중…</div>
   <input class="search" id="q" placeholder="품목 검색 (예: 우드3, 패브릭7, 엣지)">
   <div class="tabs" id="tabs"></div>
@@ -67,6 +67,9 @@
 const fmt=n=>n.toLocaleString('ko-KR');
 // ▼ 요청 자동 접수용 서버 주소 (Cloudflare Worker). 비워두면 '요청 보내기' 대신 복사/공유만 가능.
 const ENDPOINT='https://panel-order.ws-kim.workers.dev/';
+// ▼ 소재 정보 홈페이지 (임시 주소 — 정식 도메인이 생기면 여기만 바꾸면 됨)
+const HOME_URL='https://sojae-material-world.koretorian.chatgpt.site/#materials';
+document.getElementById('homeLink').href=HOME_URL;
 let lastRows=[];
 let data=[],cart={},cat='우드보드 19T';
 async function load(){
