@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SOJAE 素材 온라인 견적</title>
+<meta name="description" content="SOJAE 素材 우드보드·우드 엣지·패브릭 보드 온라인 견적. 품목을 고르면 총액이 바로 계산되고 온라인 접수까지 가능합니다.">
+<meta property="og:title" content="SOJAE 素材 온라인 견적">
+<meta property="og:description" content="품목을 고르면 총액이 바로 계산되고 주문 접수까지 가능합니다.">
+<meta property="og:image" content="https://koretorian-byte.github.io/panel-shop/logo.png">
+<meta property="og:type" content="website">
+<link rel="icon" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<meta name="theme-color" content="#f5f4f0">
+<style>
+  :root{--bg:#f5f4f0;--card:#fcfbf7;--line:#d9d5cd;--text:#242321;--muted:#6b6862;--accent:#242321;--soft:#ecebe7;--sand:#cfc6b4;--ok:#3f7d4e;--warn:#b4372c;--eta:#9a6a1f;--r:4px}
+  *{box-sizing:border-box} html{-webkit-text-size-adjust:100%}
+  body{margin:0;font-family:"Helvetica Neue",Helvetica,Arial,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+  button{touch-action:manipulation;cursor:pointer;font-family:inherit}
+  header{position:sticky;top:0;background:rgba(245,244,240,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:10px 14px;z-index:5}
+  .wrap{max-width:760px;margin:0 auto}
+  header h1{font-size:17px;margin:0;font-weight:500;letter-spacing:-.01em;display:flex;align-items:baseline;gap:8px} header h1 .eb{font-size:10.5px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:4px} .brand img{height:26px;width:auto}
+  .home{margin-left:auto;font-size:12px;color:var(--text);text-decoration:none;border:1px solid var(--text);background:transparent;border-radius:var(--r);padding:4px 10px;white-space:nowrap;letter-spacing:.02em;transition:.15s} .home:hover{background:var(--text);color:#fff}
+  .upd{font-size:11.5px;color:var(--muted);letter-spacing:.02em}
+  .search{width:100%;height:36px;border:1px solid var(--line);border-radius:var(--r);padding:0 10px;font-size:14px;margin-top:8px;background:var(--card);color:var(--text)} .search:focus{outline:none;border-color:var(--text)}
+  .tabs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .tabs button{border:1px solid var(--line);background:var(--card);border-radius:var(--r);padding:5px 11px;font-size:13px;white-space:nowrap;color:var(--text);transition:.12s}
+  .tabs button.on{background:var(--text);color:#fff;border-color:var(--text)}
+  .tabs button small{opacity:.6;margin-left:3px;font-size:11px}
+  main{padding:10px 12px 140px;max-width:760px;margin:0 auto}
+  .grp{font-size:11.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:16px 2px 6px} .grp:first-child{margin-top:4px}
+  .item{display:grid;grid-template-columns:64px 1fr auto;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:10px;margin-bottom:8px;transition:border-color .12s}
+  .ph{width:64px;height:64px;border-radius:var(--r);background:var(--soft);object-fit:cover;display:flex;align-items:center;justify-content:center;font-size:12px;color:#9c988f;font-weight:500;text-align:center;line-height:1.2;overflow:hidden;letter-spacing:.02em}
+  .nm{font-weight:500;font-size:15px;letter-spacing:-.01em} .sp{font-size:12px;color:var(--muted);margin-top:2px}
+  .pr{font-size:14px;margin-top:4px} .st{font-size:12px;margin-top:2px} .st.low{color:var(--eta)} .st.ok{color:var(--ok)} .st .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:currentColor;margin:0 5px 1px 0;vertical-align:middle}
+  .qty{display:flex;align-items:center;gap:4px} .qty button{width:34px;height:34px;border-radius:var(--r);border:1px solid var(--line);background:var(--card);font-size:18px;color:var(--text)} .qty button:hover{border-color:var(--text)}
+  .qty input{width:44px;height:34px;text-align:center;border:1px solid var(--line);border-radius:var(--r);font-size:15px;background:var(--card);color:var(--text)}
+  .qty input::-webkit-outer-spin-button,.qty input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0} .qty input{-moz-appearance:textfield}
+  .item.sel{border-color:var(--text);box-shadow:0 0 0 2px var(--sand)}
+  .empty{padding:40px 10px;text-align:center;color:var(--muted);font-size:14px} .empty button{margin-top:10px;border:1px solid var(--text);background:transparent;color:var(--text);border-radius:var(--r);padding:8px 14px;font-size:13px}
+  .cartbox{max-width:760px;margin:0 auto 6px;border:1px solid var(--line);border-radius:var(--r);background:var(--bg);max-height:126px;overflow-y:auto;display:none;overscroll-behavior:contain}
+  .cartbox.open{display:block}
+  .crow{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:4px 10px;min-height:42px;border-bottom:1px solid var(--line);font-size:13px}
+  .crow:last-child{border-bottom:none} .crow .cn{font-weight:600} .crow .cs{font-size:11px;color:var(--muted)} .crow .ca{text-align:right;white-space:nowrap}
+  .crow .eta{color:var(--eta)}
+  .crow .qty button{width:28px;height:28px;font-size:15px} .crow .qty input{width:38px;height:28px;font-size:13px} .crow .del{width:28px;height:28px;border:none;background:none;color:var(--warn);font-size:16px}
+  .cempty{padding:10px;font-size:13px;color:var(--muted);text-align:center}
+  #cartToggle{border:1px solid var(--text);background:transparent;color:var(--text);font-size:12px;font-weight:500;border-radius:var(--r);padding:4px 10px;margin-right:6px;white-space:nowrap;transition:.15s;letter-spacing:.02em}
+  #cartToggle.open{background:var(--text);color:#fff}
+  #cartToggle .n{display:inline-block;min-width:18px;height:18px;line-height:18px;border-radius:9px;background:var(--accent);color:#fff;font-size:11px;text-align:center;margin-left:4px}
+  #cartToggle.open .n{background:#fff;color:var(--accent)}
+  .cartbox.open{animation:slide .18s ease-out} @keyframes slide{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  footer{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom));box-shadow:0 -4px 16px rgba(36,35,33,.06)}
+  .tot{display:flex;justify-content:space-between;align-items:center;max-width:760px;margin:0 auto;gap:8px}
+  .tot b{font-size:21px;white-space:nowrap;font-weight:500;letter-spacing:-.02em} .sub{font-size:12px;color:var(--muted)}
+  .totr{display:flex;flex-direction:column;align-items:flex-end;line-height:1.1} .totr small{font-size:10px;color:var(--muted);margin-top:2px}
+  .btns{display:flex;gap:8px;max-width:760px;margin:8px auto 0} .btns button{flex:1;height:42px;border-radius:var(--r);border:1px solid transparent;font-size:14.5px;font-weight:500;letter-spacing:.01em;transition:.12s}
+  .btns .p{background:var(--text);color:#fff} .btns .p:hover{background:#000} .btns .s{background:var(--soft);color:var(--text);border-color:var(--line)} .btns .s:hover{border-color:var(--text)} .btns button:disabled{opacity:.5;cursor:default}
+  dialog{border:1px solid var(--line);border-radius:6px;padding:16px;width:min(92vw,520px);background:var(--card);color:var(--text)} dialog::backdrop{background:rgba(36,35,33,.4)} dialog h3{font-weight:500;letter-spacing:-.01em}
+  dialog pre{white-space:pre-wrap;font-size:13px;background:var(--soft);padding:10px;border-radius:var(--r);max-height:32vh;overflow:auto;margin:0 0 6px}
+  .frm{display:grid;gap:6px;margin-bottom:8px} .frm input{height:38px;border:1px solid var(--line);border-radius:var(--r);padding:0 10px;font-size:14px;background:#fff;color:var(--text)} .frm input:focus,.frm select:focus{outline:none;border-color:var(--text)}
+  .frm input:invalid:not(:placeholder-shown){border-color:#d99a93}
+  .frm select{height:38px;border:1px solid var(--line);border-radius:var(--r);padding:0 10px;font-size:14px;background:#fff;color:var(--text)}
+  .msg{font-size:13px;min-height:18px;margin:4px 0} .msg.ok{color:var(--ok)} .msg.err{color:var(--warn)}
+  .hint{font-size:12px;color:var(--muted);margin:0 0 8px}
+  .shrt{display:none} .sbtn{display:none;border:1px solid var(--line);background:var(--card);border-radius:var(--r);width:32px;height:30px;font-size:14px}
+  .tabwrap{position:relative}
+  .toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(10px);background:var(--text);color:#fff;font-size:13px;padding:8px 14px;border-radius:var(--r);opacity:0;pointer-events:none;transition:.2s;z-index:20;white-space:nowrap}
+  .toast.show{opacity:.92;transform:translateX(-50%)}
+  dialog{max-height:92vh;overflow:auto}
+  dialog .btns{flex-wrap:wrap;position:sticky;bottom:-16px;background:var(--card);padding:8px 0 4px;margin-top:4px} dialog .btns button{flex:1 1 30%;min-width:0}
+  dialog .btns .p{flex-basis:100%}
+  @media (max-width:640px){
+    header{padding:8px 12px}
+    .brand{margin-bottom:0} .brand h1{font-size:14.5px;white-space:nowrap} .brand h1 .eb{display:none} .brand img{height:22px} .home{padding:3px 8px;font-size:11px}
+    .sbtn{display:inline-block} .upd{display:none} .full{display:none} .shrt{display:inline} .search{display:none;margin-top:6px;height:34px} header.sopen .search{display:block}
+    .tabs{display:block;margin-top:6px}
+    .trow{display:flex;gap:5px;margin-top:5px} .trow button{flex:1;padding:6px 4px;font-size:12.5px;border-radius:var(--r);text-align:center;min-width:0;overflow:hidden;text-overflow:ellipsis}
+    .trow.sub button{flex:0 0 auto;padding:4px 12px;font-size:12px;border-radius:var(--r);background:var(--soft);border-color:var(--soft)} .trow.sub button.on{background:var(--sand);color:var(--text);border-color:var(--sand)}
+    .trow.sub button small{display:inline;opacity:.6;font-size:11px;margin-left:3px}
+    main{padding:8px 10px}
+    .item{padding:8px;gap:8px;grid-template-columns:52px 1fr auto;margin-bottom:6px} .ph{width:52px;height:52px;font-size:11px} .nm{font-size:14px} .pr{margin-top:2px}
+    footer{padding:6px 10px calc(6px + env(safe-area-inset-bottom))}
+    .cartbox{max-height:88px;margin-bottom:4px} .crow{min-height:38px;padding:2px 8px;font-size:12px} .crow .cs{display:none}
+    .tot{align-items:center} .tot b{font-size:17px} .sub{font-size:11px} .sub .vatw{display:none}
+    .btns{margin-top:6px} .btns button{height:36px;font-size:14px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+  <div class="brand"><img src="logo.png" alt="SOJAE 素材"><h1><span class="full">온라인 견적</span><span class="shrt">온라인 견적</span><small class="eb">Online Quote</small></h1><a class="home" id="homeLink" href="#" target="_blank" rel="noopener">홈페이지 보기 ↗</a><button class="sbtn" id="sbtn" aria-label="검색">🔍</button></div>
+  <div class="upd" id="upd">품목 불러오는 중…</div>
+  <input class="search" id="q" placeholder="품목 검색 (예: 우드3, 패브릭7, 엣지 24)" autocomplete="off">
+  <div class="tabwrap"><div class="tabs" id="tabs"></div></div>
+  </div>
+</header>
+<main id="list"></main>
+<div class="toast" id="toast"></div>
+<footer>
+  <div class="cartbox" id="cartbox"></div>
+  <div class="tot"><div><button id="cartToggle">선택 품목 보기</button> <span class="sub">선택 <span id="cnt">0</span>품목<span class="vatw" hidden>공급가 <span id="sup">0</span>원 · 부가세 <span id="vat">0</span>원</span></span></div><div class="totr"><b id="total">0원</b><small>부가세 포함 · 배송비 별도</small></div></div>
+  <div class="btns"><button class="s" id="clear">비우기</button><button class="s" id="quote">견적서만 보기</button><button class="p" id="order">주문/접수하기</button></div>
+</footer>
+<dialog id="dlg"><h3 style="margin:0 0 8px" id="dtitle">견적서</h3>
+  <p class="hint" id="dhint"></p>
+  <div class="frm"><select id="f_ship" aria-label="배송 지역"></select></div>
+  <div class="frm" id="frm">
+    <input id="f_company" placeholder="업체명 *" required maxlength="60">
+    <input id="f_contact" placeholder="담당자 / 연락처 *" required maxlength="60" autocomplete="tel">
+    <input id="f_addr" placeholder="배송지" maxlength="120">
+    <input id="f_note" placeholder="요청사항 (납기, 문의 등)" maxlength="300">
+    <input id="f_web" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
+  </div>
+  <pre id="txt"></pre>
+  <div id="msg" class="msg"></div>
+  <div class="btns"><button class="s" id="closeBtn">닫기</button><button class="s" id="copy">복사</button><button class="s" id="share">공유</button><button class="s" id="pdf">PDF 저장</button><button class="p" id="send">주문/접수하기</button></div></dialog>
+<script>
+const fmt=n=>n.toLocaleString('ko-KR');
+const etaTxt=d=>{const [y,m,dd]=d.split('-');return `${Number(m)}/${Number(dd)}`;};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// ▼ 요청 자동 접수용 서버 주소 (Cloudflare Worker). 비워두면 '요청 보내기' 대신 복사/공유만 가능.
+const ENDPOINT='https://panel-order.ws-kim.workers.dev/';
+// ▼ 소재 정보 홈페이지 (임시 주소 — 정식 도메인이 생기면 여기만 바꾸면 됨)
+const HOME_URL='https://sojae-material-world.koretorian.chatgpt.site/#materials';
+document.getElementById('homeLink').href=HOME_URL;
+// ▼ 배송비 (남양주 출고 · 1톤 화물 기준 · 부가세 별도). 금액만 바꾸면 견적/PDF/접수에 모두 반영됨
+const SHIP=[
+  {id:'A',label:'서울·경기 근거리 (남양주·구리·하남·서울 전역·성남·의정부·광주·양주)',fee:50000},
+  {id:'B',label:'경기 원거리·인천 (고양·김포·부천·인천·안양·수원·용인·파주·평택·화성·안산 등)',fee:90000},
+  {id:'C',label:'충청·강원 (대전·세종·천안·청주·원주·춘천·강릉 등)',fee:110000},
+  {id:'D',label:'전라·경북·대구 (전주·광주·대구·구미·포항 등)',fee:240000},
+  {id:'E',label:'경남·부산·울산 (부산·울산·창원·김해·진주 등)',fee:350000},
+  {id:'COD',label:'착불 (배송비 수령 시 화물기사에게 지불)',fee:0},
+];
+const SHIP_NOTE='제주·도서벽지 제외 · 1톤 화물 기준(약 30장 초과 시 별도 협의) · 야간/주말·양중 별도';
+const shipSel=()=>SHIP.find(x=>x.id===document.getElementById('f_ship').value)||SHIP[0];
+const shipFee=()=>shipSel().fee;
+const shipTxt=()=>{const x=shipSel();return x.id==='COD'?'착불':x.label.split(' (')[0]+' '+fmt(x.fee)+'원';};
+document.getElementById('f_ship').innerHTML=SHIP.map(x=>`<option value="${x.id}">🚚 ${esc(x.label)}${x.fee?' — '+fmt(x.fee)+'원':''}</option>`).join('');
+try{const sv=localStorage.getItem('ship');if(sv&&SHIP.some(x=>x.id===sv))document.getElementById('f_ship').value=sv;}catch(e){}
+document.getElementById('f_ship').addEventListener('change',()=>{try{localStorage.setItem('ship',document.getElementById('f_ship').value);}catch(e){}buildText();});
+const ORDER=['우드보드 19T','우드보드 10T','우드 엣지 24mm','우드 엣지 50mm','패브릭 보드 19T','패브릭 보드 10T'];
+const natural=(a,b)=>a.localeCompare(b,'ko',{numeric:true});
+let lastRows=[],data=[],cart={},cat='우드보드 19T',cartOpen=false;
+const LS=(k,v)=>{try{if(v===undefined)return JSON.parse(localStorage.getItem(k)||'null');localStorage.setItem(k,JSON.stringify(v));}catch(e){return null;}};
+function status(i){
+  if(i.available)return{cls:'ok',txt:'<i class="dot"></i>주문 가능',short:''};
+  if(i.eta)return{cls:'low',txt:'<i class="dot"></i>'+etaTxt(i.eta)+' 입고 예정 (예약 주문 가능)',short:etaTxt(i.eta)+' 입고 예정'};
+  return{cls:'low',txt:'<i class="dot"></i>입고 문의 (주문 가능)',short:'입고 문의'};
+}
+async function load(){
+  try{
+    const r=await fetch('stock.json?'+Date.now(),{cache:'no-store'});const j=await r.json();
+    data=(j.items||[]).map(i=>({...i,q:(i.name+' '+(i.spec||'')+' '+i.category).replace(/\s+/g,'').toLowerCase()}));
+    data.sort((a,b)=>(ORDER.indexOf(a.category)-ORDER.indexOf(b.category))||natural(a.name,b.name));
+    upd.textContent='품목 기준: '+j.updated+' · 재고 수량은 주문 시 확인 후 안내드립니다';
+  }catch(e){
+    upd.textContent='품목 정보를 불러오지 못했습니다.';
+    list.innerHTML='<div class="empty">품목 정보를 불러오지 못했습니다.<br><button onclick="location.reload()">다시 시도</button></div>';return;
+  }
+  // 이전에 담아둔 품목 복원 (품목이 아직 있는 것만)
+  const saved=LS('cart')||{};cart={};for(const [k,v] of Object.entries(saved)){if(v>0&&data.some(i=>i.name===k))cart[k]=v;}
+  if(Object.keys(cart).length&&!isMobile())cartOpen=true;
+
+  const present=new Set(data.map(i=>i.category));
+  const cats=['전체',...ORDER.filter(c=>present.has(c)),...[...present].filter(c=>!ORDER.includes(c))];
+  if(!cats.includes(cat))cat='전체';
+  allCats=cats;renderTabs();
+  render();
+}
+let allCats=[];
+const GROUPS=[['우드보드',['19T','10T']],['우드 엣지',['24mm','50mm']],['패브릭 보드',['19T','10T']]];
+function renderTabs(){
+  const cnt=c=>c==='전체'?data.length:data.filter(i=>i.category===c).length;
+  if(!isMobile()){
+    tabs.innerHTML=allCats.map(c=>`<button class="${c===cat?'on':''}" data-c="${esc(c)}">${esc(c)}<small>${cnt(c)}</small></button>`).join('');return;
+  }
+  // 모바일: 1줄째 큰 분류(전체/우드보드/우드 엣지/패브릭 보드), 2줄째 세부(19T/10T, 24mm/50mm) — 가로 스크롤 없이 전부 보이게
+  const g=GROUPS.find(([name])=>cat.startsWith(name));
+  const row1=['전체',...GROUPS.map(x=>x[0])].map(name=>`<button class="${(name==='전체'?cat==='전체':cat.startsWith(name))?'on':''}" data-g="${esc(name)}">${esc(name)}</button>`).join('');
+  const row2=g?g[1].map(sub=>{const c=g[0]+' '+sub;return `<button class="sub ${c===cat?'on':''}" data-c="${esc(c)}">${esc(sub)}<small>${cnt(c)}</small></button>`;}).join(''):'';
+  tabs.innerHTML=`<div class="trow">${row1}</div>`+(row2?`<div class="trow sub">${row2}</div>`:'');
+}
+window.addEventListener('resize',()=>{if(data.length)renderTabs();});
+function itemHtml(i){
+  const n=cart[i.name]||0,s=status(i);
+  const ph=i.photo?`<img class="ph" src="${esc(i.photo)}" alt="" loading="lazy">`:`<div class="ph">${esc(i.name.split(' ')[0])}</div>`;
+  return `<div class="item ${n?'sel':''}" data-n="${esc(i.name)}">
+    ${ph}
+    <div><div class="nm">${esc(i.name)}</div><div class="sp">${esc(i.spec||'')}</div>
+      <div class="pr">${fmt(i.price)}원 / ${esc(i.unit)}</div>
+      <div class="st ${s.cls}">${s.txt}</div></div>
+    <div class="qty"><button data-d="-1" aria-label="수량 줄이기">−</button><input type="number" inputmode="numeric" min="0" value="${n}" aria-label="수량"><button data-d="1" aria-label="수량 늘리기">+</button></div></div>`;
+}
+function render(){
+  const q=document.getElementById('q').value.replace(/\s+/g,'').toLowerCase();
+  const rows=data.filter(i=>(cat==='전체'||i.category===cat)&&(!q||i.q.includes(q)));
+  if(!rows.length){list.innerHTML=`<div class="empty">${q?'"'+esc(document.getElementById('q').value)+'" 에 맞는 품목이 없습니다.':'품목이 없습니다.'}</div>`;}
+  else if(cat==='전체'&&!q){
+    let html='',last='';rows.forEach(i=>{if(i.category!==last){html+=`<div class="grp">${esc(i.category)}</div>`;last=i.category;}html+=itemHtml(i);});list.innerHTML=html;
+  }else list.innerHTML=rows.map(itemHtml).join('');
+  total_();
+}
+function total_(){
+  let sup=0,cnt=0;for(const [k,v] of Object.entries(cart)){if(v>0){const it=data.find(i=>i.name===k);if(it){sup+=it.price*v;cnt++;}}}
+  const vat=Math.round(sup*0.1);
+  document.getElementById('sup').textContent=fmt(sup);document.getElementById('vat').textContent=fmt(vat);document.getElementById('cnt').textContent=cnt;document.getElementById('total').textContent=fmt(sup+vat)+'원';
+  document.getElementById('quote').disabled=document.getElementById('order').disabled=document.getElementById('clear').disabled=!cnt;
+  LS('cart',cart);renderCart();
+}
+function renderCart(){
+  const rows=Object.entries(cart).filter(([,v])=>v>0).map(([k,v])=>({k,v,it:data.find(i=>i.name===k)})).filter(r=>r.it);
+  const box=document.getElementById('cartbox');
+  const tg=document.getElementById('cartToggle');tg.className=cartOpen?'open':'';tg.textContent=cartOpen?'선택 품목 닫기':'선택 품목 보기';
+  box.className='cartbox'+(cartOpen?' open':'');
+  if(!rows.length){box.innerHTML='<div class="cempty">선택된 품목이 없습니다. 위 목록에서 + 를 눌러 담아 주세요.</div>';return;}
+  box.innerHTML=rows.map(({k,v,it})=>{const s=status(it);return `<div class="crow" data-n="${esc(k)}">
+    <div><div class="cn">${esc(k)}</div><div class="cs">${esc(it.spec||'')} · ${fmt(it.price)}원/${esc(it.unit)}${s.short?` · <span class="eta">${s.short}</span>`:''}</div></div>
+    <div class="qty"><button data-d="-1" aria-label="수량 줄이기">−</button><input type="number" inputmode="numeric" min="0" value="${v}" aria-label="수량"><button data-d="1" aria-label="수량 늘리기">+</button></div>
+    <div class="ca">${fmt(it.price*v)}원 <button class="del" title="빼기" aria-label="빼기">×</button></div></div>`;}).join('');
+}
+document.getElementById('cartToggle').onclick=()=>{cartOpen=!cartOpen;renderCart();};
+function padMain(){document.getElementById('list').style.paddingBottom=(document.querySelector('footer').offsetHeight+16)+'px';}
+new ResizeObserver(padMain).observe(document.querySelector('footer'));
+let toastT;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1400);}
+function setQty(n,v){v=Math.max(0,Math.min(9999,Math.floor(Number(v)||0)));const was=cart[n]||0;if(!was&&v>0&&!cartOpen&&!isMobile())cartOpen=true;cart[n]=v;render();
+  if(v>was)toast(`${n} ${v}${(data.find(i=>i.name===n)||{}).unit||''} 담김`);else if(v===0&&was)toast(`${n} 뺌`);}
+function qtyHandler(root){
+  root.addEventListener('click',e=>{const row=e.target.closest('[data-n]');if(!row)return;const n=row.dataset.n;
+    if(e.target.classList.contains('del')){setQty(n,0);return;}
+    const b=e.target.closest('button[data-d]');if(b)setQty(n,(cart[n]||0)+Number(b.dataset.d));});
+  root.addEventListener('change',e=>{if(e.target.type==='number'){setQty(e.target.closest('[data-n]').dataset.n,e.target.value);}});
+  root.addEventListener('focusin',e=>{if(e.target.type==='number')e.target.select();});
+}
+qtyHandler(list);qtyHandler(document.getElementById('cartbox'));
+tabs.addEventListener('click',e=>{
+  const gb=e.target.closest('button[data-g]');
+  if(gb){const name=gb.dataset.g;if(name==='전체')cat='전체';else{const g=GROUPS.find(x=>x[0]===name);const first=g[1].map(sub=>name+' '+sub).find(c=>allCats.includes(c));cat=first||name;}renderTabs();render();window.scrollTo({top:0});return;}
+  const b=e.target.closest('button[data-c]');if(!b)return;cat=b.dataset.c;renderTabs();render();window.scrollTo({top:0});
+  const on=tabs.querySelector('button.on:not([data-g])');if(on&&!isMobile())on.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});});
+document.getElementById('q').addEventListener('input',render);
+const isMobile=()=>window.matchMedia('(max-width:640px)').matches;
+document.getElementById('sbtn').onclick=()=>{const h=document.querySelector('header');h.classList.toggle('sopen');if(h.classList.contains('sopen'))document.getElementById('q').focus();else{document.getElementById('q').value='';render();}};
+clear.onclick=()=>{if(Object.keys(cart).some(k=>cart[k]>0)&&!confirm('선택한 품목을 모두 비울까요?'))return;cart={};render();};
+document.getElementById('closeBtn').onclick=()=>dlg.close();
+dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close();});
+// 배송지에 지역명을 적으면 배송 권역을 자동 추천 (직접 고른 뒤에는 덮어쓰지 않음)
+const ZONE_KW=[['E',/부산|울산|창원|김해|진주|양산|거제|통영|경남/],['D',/전주|광주|대구|구미|포항|경주|안동|목포|여수|순천|익산|군산|전북|전남|경북/],['C',/대전|세종|천안|청주|충주|원주|춘천|강릉|속초|아산|충남|충북|강원/],['B',/고양|김포|부천|인천|안양|수원|용인|파주|평택|화성|안산|시흥|군포|의왕|과천|광명|오산|안성|이천|여주|양평|가평|포천|동두천/],['A',/남양주|구리|하남|서울|성남|의정부|광주|양주|경기/]];
+let shipTouched=false;document.getElementById('f_ship').addEventListener('change',()=>{shipTouched=true;});
+document.getElementById('f_addr').addEventListener('input',e=>{if(shipTouched)return;const v=e.target.value;for(const [id,re] of ZONE_KW){if(re.test(v)){document.getElementById('f_ship').value=id;buildText();break;}}});
+function openDlg(mode){
+  const rows=Object.entries(cart).filter(([,v])=>v>0).map(([k,v])=>{const it=data.find(i=>i.name===k);return {k,v,it};}).filter(r=>r.it);
+  if(!rows.length){alert('품목을 먼저 선택해 주세요.');return;}
+  lastRows=rows;msg.textContent='';msg.className='msg';
+  const submit=mode==='order';
+  document.getElementById('dtitle').textContent=submit?'주문/접수':'견적서';
+  document.getElementById('dhint').textContent=submit?'업체명과 담당자/연락처만 적으면 바로 접수됩니다. 담당자가 확인 후 연락드립니다.':'아래 내용을 복사하거나 공유해서 보내실 수 있습니다.';
+  document.getElementById('frm').hidden=!submit;
+  const b=document.getElementById('send');b.hidden=!submit;b.disabled=false;b.textContent="주문/접수하기";
+  if(submit){const c=LS('contact')||{};for(const id of ['f_company','f_contact','f_addr']){if(c[id]&&!document.getElementById(id).value)document.getElementById(id).value=c[id];}}
+  if(submit&&!ENDPOINT){msg.className='msg err';msg.textContent='온라인 접수가 아직 연결되지 않았습니다. 아래 내용을 복사/공유로 보내주세요.';b.hidden=true;}
+  buildText();dlg.showModal();
+  if(submit&&!document.getElementById('f_company').value)document.getElementById('f_company').focus();
+}
+quote.onclick=()=>openDlg('quote');
+document.getElementById('order').onclick=()=>openDlg('order');
+function buildText(){
+  let sup=0;const lines=lastRows.map(({k,v,it})=>{const a=it.price*v;sup+=a;const s=status(it);return `- ${k} (${it.spec||''}) × ${v}${it.unit} = ${fmt(a)}원${s.short?' ['+s.short+']':''}`;});
+  const vat=Math.round(sup*0.1);const g=id=>document.getElementById(id).value.trim();
+  const head=document.getElementById('frm').hidden?'':`업체명: ${g('f_company')}\n담당자/연락처: ${g('f_contact')}\n배송지: ${g('f_addr')}\n요청사항: ${g('f_note')}\n\n`;
+  const now=new Date();
+  const sf=shipFee(),svat=Math.round(sf*0.1);
+  const qno=`Q${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
+  txt.textContent=`[SOJAE 素材 견적 ${qno}] ${now.toLocaleDateString('ko-KR')} ${now.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}\n${head}${lines.join('\n')}\n- 배송비: ${shipTxt()}\n\n공급가 ${fmt(sup+sf)}원 (자재 ${fmt(sup)} + 배송 ${fmt(sf)})\n부가세 ${fmt(vat+svat)}원\n합계 ${fmt(sup+vat+sf+svat)}원\n(${SHIP_NOTE} · 재고는 주문 접수 후 확인하여 안내드립니다 · 입고 예정 품목은 입고 후 출고)`;
+}
+['f_company','f_contact','f_addr','f_note'].forEach(id=>document.getElementById(id).addEventListener('input',buildText));
+let sending=false;
+document.getElementById('send').onclick=async()=>{
+  if(sending)return;
+  const g=id=>document.getElementById(id).value.trim();
+  if(!g('f_company')||!g('f_contact')){msg.className='msg err';msg.textContent='업체명과 담당자/연락처를 입력해 주세요.';(g('f_company')?document.getElementById('f_contact'):document.getElementById('f_company')).focus();return;}
+  const b=document.getElementById('send');b.disabled=true;b.textContent='접수 중…';sending=true;
+  try{
+    const ctrl=new AbortController();const to=setTimeout(()=>ctrl.abort(),25000);
+    const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},signal:ctrl.signal,body:JSON.stringify({
+      company:g('f_company'),contact:g('f_contact'),address:g('f_addr'),note:('배송: '+shipTxt()+(g('f_note')?' / '+g('f_note'):'')),website:g('f_web'),shipping:shipFee(),
+      items:lastRows.map(({k,v,it})=>({name:k,qty:v,unit:it.unit,price:it.price})),text:txt.textContent})});
+    clearTimeout(to);
+    const j=await r.json();
+    if(!r.ok||!j.ok)throw new Error(j.error||r.status);
+    LS('contact',{f_company:g('f_company'),f_contact:g('f_contact'),f_addr:g('f_addr')});
+    msg.className='msg ok';msg.textContent='접수되었습니다 (접수번호 '+(j.project||'')+'). 담당자가 확인 후 연락드립니다. 이 창에서 견적서를 PDF로 저장하거나 복사해 두실 수 있어요.';b.textContent='접수 완료';toast('주문이 접수되었습니다');
+    cart={};render();  // 같은 내용이 두 번 접수되지 않도록 비운다
+  }catch(e){msg.className='msg err';msg.textContent='전송 실패: '+(e.name==='AbortError'?'응답 시간 초과':e.message)+' — 아래 복사/공유로 보내주세요.';b.disabled=false;b.textContent="주문/접수하기";}
+  finally{sending=false;}
+};
+copy.onclick=async()=>{try{await navigator.clipboard.writeText(txt.textContent);copy.textContent='복사됨';setTimeout(()=>copy.textContent='복사',1500);}catch(e){alert('길게 눌러 복사해 주세요.');}};
+// PDF: 인쇄용 견적서 페이지를 새 창에 열고 인쇄 대화상자 → "PDF로 저장". (양식은 추후 교체 예정)
+function quoteHtml(){
+  const g=id=>document.getElementById(id).value.trim();const withForm=!document.getElementById('frm').hidden;
+  const now=new Date();const dateS=`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
+  const no=`Q${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
+  let sup=0;const rows=lastRows.map(({k,v,it},i)=>{const a=it.price*v;sup+=a;const s=status(it);
+    return `<tr><td class="c">${i+1}</td><td>${esc(k)}</td><td>${esc(it.spec||'')}</td><td class="c">${v}</td><td class="c">${esc(it.unit)}</td><td class="r">${fmt(it.price)}</td><td class="r">${fmt(a)}</td><td class="c small">${s.short?esc(s.short):''}</td></tr>`;}).join('');
+  const vat=Math.round(sup*0.1);const sf=shipFee(),svat=Math.round(sf*0.1);
+  const shipRow=`<tr><td class="c">${lastRows.length+1}</td><td>배송비</td><td>${esc(shipSel().label.split(' (')[0])}</td><td class="c">1</td><td class="c">식</td><td class="r">${fmt(sf)}</td><td class="r">${fmt(sf)}</td><td class="c small">${shipSel().id==='COD'?'착불':''}</td></tr>`;
+  const to=withForm&&g('f_company')?`<div class="box"><div class="lbl">수신</div><div><b>${esc(g('f_company'))}</b> 귀하${g('f_contact')?`<br><span class="small">담당자/연락처: ${esc(g('f_contact'))}</span>`:''}${g('f_addr')?`<br><span class="small">배송지: ${esc(g('f_addr'))}</span>`:''}</div></div>`:`<div class="box"><div class="lbl">수신</div><div>&nbsp;</div></div>`;
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>SOJAE 素材 견적서 ${no}</title>
+<style>
+@page{size:A4;margin:16mm}
+body{font-family:"Helvetica Neue",Helvetica,Arial,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#242321;margin:0;font-size:12.5px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #242321;padding-bottom:10px;margin-bottom:14px}
+.top img{height:34px} h1{font-size:24px;letter-spacing:6px;margin:0}
+.meta{text-align:right;font-size:12px;color:#444;line-height:1.6}
+.boxes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.box{border:1px solid #cfcbc4;border-radius:4px;padding:10px 12px;line-height:1.6} .lbl{font-size:11px;color:#777;margin-bottom:2px}
+table{width:100%;border-collapse:collapse;margin-top:6px} th,td{border:1px solid #cfcbc4;padding:6px 8px;font-size:12px} th{background:#ecebe7;font-weight:500}
+td.c,th.c{text-align:center} td.r,th.r{text-align:right} .small{font-size:11px;color:#555}
+.sum{margin-top:12px;margin-left:auto;width:280px} .sum div{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #eee} .sum .tot{font-size:16px;font-weight:700;border-bottom:2px solid #111}
+.note{margin-top:18px;font-size:11.5px;color:#444;line-height:1.7} .note b{color:#111}
+.foot{margin-top:26px;text-align:center;font-size:11px;color:#777}
+@media screen{body{padding:24px;max-width:800px;margin:0 auto}.bar{position:sticky;top:0;background:#fff;padding:8px 0 12px;text-align:right}.bar button{padding:8px 14px;border-radius:4px;border:1px solid #242321;background:#242321;color:#fff;font-size:14px;cursor:pointer}}
+@media print{.bar{display:none}}
+</style></head><body>
+<div class="bar"><button onclick="window.print()">🖨 인쇄 / PDF로 저장</button></div>
+<div class="top"><div><img src="${location.origin+location.pathname.replace(/[^/]*$/,'')}logo.png" alt="SOJAE 素材"><h1 style="margin-top:6px;font-weight:500;letter-spacing:.3em">견 적 서</h1></div>
+<div class="meta">견적번호 ${no}<br>견적일 ${dateS}<br>유효기간: 견적일로부터 7일</div></div>
+<div class="boxes">${to}<div class="box"><div class="lbl">공급자</div><div><b>SOJAE 素材</b><br><span class="small">판재 · 우드보드 / 우드 엣지 / 패브릭 보드</span></div></div></div>
+<table><thead><tr><th class="c" style="width:32px">No</th><th>품목</th><th>규격</th><th class="c" style="width:44px">수량</th><th class="c" style="width:40px">단위</th><th class="r" style="width:80px">단가(원)</th><th class="r" style="width:92px">금액(원)</th><th class="c" style="width:78px">비고</th></tr></thead><tbody>${rows}${shipRow}</tbody></table>
+<div class="sum"><div><span>공급가액</span><span>${fmt(sup+sf)}원</span></div><div><span>부가세 (10%)</span><span>${fmt(vat+svat)}원</span></div><div class="tot"><span>합계</span><span>${fmt(sup+vat+sf+svat)}원</span></div></div>
+<div class="note"><b>안내</b><br>· 배송: ${SHIP_NOTE}.<br>· 재고는 주문 접수 후 확인하여 안내드립니다.<br>· '입고 예정' 표기 품목은 입고 후 출고됩니다.${withForm&&g('f_note')?`<br>· 요청사항: ${esc(g('f_note'))}`:''}</div>
+<div class="foot">SOJAE 素材 · 온라인 견적 ${esc(location.origin+location.pathname)}</div>
+</body></html>`;
+}
+document.getElementById('pdf').onclick=()=>{
+  const w=window.open('','_blank');
+  if(!w){alert('팝업이 차단되었습니다. 팝업을 허용한 뒤 다시 눌러 주세요.');return;}
+  w.document.open();w.document.write(quoteHtml());w.document.close();
+  w.onload=()=>setTimeout(()=>{try{w.focus();w.print();}catch(e){}},400);
+};
+share.onclick=()=>{if(navigator.share)navigator.share({title:'SOJAE 素材 온라인 견적',text:txt.textContent}).catch(()=>{});else copy.onclick();};
+load();
+</script>
+</body>
+</html>
