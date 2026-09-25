@@ -54,6 +54,7 @@
   footer{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom));box-shadow:0 -4px 16px rgba(0,0,0,.06)}
   .tot{display:flex;justify-content:space-between;align-items:center;max-width:760px;margin:0 auto;gap:8px}
   .tot b{font-size:20px;white-space:nowrap} .sub{font-size:12px;color:var(--muted)}
+  .totr{display:flex;flex-direction:column;align-items:flex-end;line-height:1.1} .totr small{font-size:10px;color:var(--muted);margin-top:2px}
   .btns{display:flex;gap:8px;max-width:760px;margin:8px auto 0} .btns button{flex:1;height:42px;border-radius:10px;border:none;font-size:15px;font-weight:700}
   .btns .p{background:var(--accent);color:#fff} .btns .s{background:#f3f4f6} .btns button:disabled{opacity:.5;cursor:default}
   dialog{border:none;border-radius:14px;padding:16px;width:min(92vw,520px)} dialog::backdrop{background:rgba(0,0,0,.35)}
@@ -94,7 +95,7 @@
 <main id="list"></main>
 <footer>
   <div class="cartbox" id="cartbox"></div>
-  <div class="tot"><div><button id="cartToggle">선택 품목 보기</button> <span class="sub">선택 <span id="cnt">0</span>품목 · 공급가 <span id="sup">0</span>원<span class="vatw"> · 부가세 <span id="vat">0</span>원</span></span></div><b id="total">0원</b></div>
+  <div class="tot"><div><button id="cartToggle">선택 품목 보기</button> <span class="sub">선택 <span id="cnt">0</span>품목<span class="vatw" hidden>공급가 <span id="sup">0</span>원 · 부가세 <span id="vat">0</span>원</span></span></div><div class="totr"><b id="total">0원</b><small>부가세 포함</small></div></div>
   <div class="btns"><button class="s" id="clear">비우기</button><button class="s" id="quote">견적서만 보기</button><button class="p" id="order">주문/접수하기</button></div>
 </footer>
 <dialog id="dlg"><h3 style="margin:0 0 8px" id="dtitle">견적서</h3>
@@ -207,7 +208,7 @@ function total_(){
 function renderCart(){
   const rows=Object.entries(cart).filter(([,v])=>v>0).map(([k,v])=>({k,v,it:data.find(i=>i.name===k)})).filter(r=>r.it);
   const box=document.getElementById('cartbox');
-  const tg=document.getElementById('cartToggle');tg.className=cartOpen?'open':'';tg.innerHTML=(cartOpen?'선택 품목 닫기':'선택 품목 보기')+(rows.length?`<span class="n">${rows.length}</span>`:'');
+  const tg=document.getElementById('cartToggle');tg.className=cartOpen?'open':'';tg.textContent=cartOpen?'선택 품목 닫기':'선택 품목 보기';
   box.className='cartbox'+(cartOpen?' open':'');
   if(!rows.length){box.innerHTML='<div class="cempty">선택된 품목이 없습니다. 위 목록에서 + 를 눌러 담아 주세요.</div>';return;}
   box.innerHTML=rows.map(({k,v,it})=>{const s=status(it);return `<div class="crow" data-n="${esc(k)}">
