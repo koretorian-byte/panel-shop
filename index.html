@@ -72,7 +72,8 @@
   .tabwrap{position:relative}
   .toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(10px);background:var(--text);color:#fff;font-size:13px;padding:8px 14px;border-radius:var(--r);opacity:0;pointer-events:none;transition:.2s;z-index:20;white-space:nowrap}
   .toast.show{opacity:.92;transform:translateX(-50%)}
-  dialog{max-height:92vh;overflow:auto}
+  dialog{max-height:92vh;overflow:auto;position:relative}
+  .xbtn{position:absolute;top:10px;right:10px;width:28px;height:28px;border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:var(--r);font-size:18px;line-height:1;padding:0;display:flex;align-items:center;justify-content:center} .xbtn:hover{border-color:var(--text);color:var(--text)}
   dialog .btns{flex-wrap:wrap;position:sticky;bottom:-16px;background:var(--card);padding:8px 0 4px;margin-top:4px} dialog .btns button{flex:1 1 30%;min-width:0}
   dialog .btns .p{flex-basis:100%}
   @media (max-width:640px){
@@ -109,7 +110,7 @@
   <div class="tot"><div><button id="cartToggle">선택 품목 보기</button> <span class="sub">선택 <span id="cnt">0</span>품목<span class="vatw" hidden>공급가 <span id="sup">0</span>원 · 부가세 <span id="vat">0</span>원</span></span></div><div class="totr"><b id="total">0원</b><small>부가세 포함 · 배송비 별도</small></div></div>
   <div class="btns"><button class="s" id="clear">비우기</button><button class="s" id="quote">견적서만 보기</button><button class="p" id="order">주문/접수하기</button></div>
 </footer>
-<dialog id="dlg"><h3 style="margin:0 0 8px" id="dtitle">견적서</h3>
+<dialog id="dlg"><button class="xbtn" id="xbtn" aria-label="닫기" title="닫기">×</button><h3 style="margin:0 0 8px" id="dtitle">견적서</h3>
   <p class="hint" id="dhint"></p>
   <div class="frm"><select id="f_ship" aria-label="배송 지역"></select></div>
   <div class="frm" id="frm">
@@ -252,7 +253,7 @@ document.getElementById('q').addEventListener('keydown',e=>{if(e.key==='Escape')
 const isMobile=()=>window.matchMedia('(max-width:640px)').matches;
 document.getElementById('sbtn').onclick=()=>{const h=document.querySelector('header');h.classList.toggle('sopen');if(h.classList.contains('sopen'))document.getElementById('q').focus();else{document.getElementById('q').value='';render();}};
 clear.onclick=()=>{if(Object.keys(cart).some(k=>cart[k]>0)&&!confirm('선택한 품목을 모두 비울까요?'))return;cart={};render();};
-document.getElementById('closeBtn').onclick=()=>dlg.close();
+document.getElementById('closeBtn').onclick=()=>dlg.close();document.getElementById('xbtn').onclick=()=>dlg.close();
 dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close();});
 // 배송지에 지역명을 적으면 배송 권역을 자동 추천 (직접 고른 뒤에는 덮어쓰지 않음)
 const ZONE_KW=[['E',/부산|울산|창원|김해|진주|양산|거제|통영|경남/],['D',/전주|광주|대구|구미|포항|경주|안동|목포|여수|순천|익산|군산|전북|전남|경북/],['C',/대전|세종|천안|청주|충주|원주|춘천|강릉|속초|아산|충남|충북|강원/],['B',/고양|김포|부천|인천|안양|수원|용인|파주|평택|화성|안산|시흥|군포|의왕|과천|광명|오산|안성|이천|여주|양평|가평|포천|동두천/],['A',/남양주|구리|하남|서울|성남|의정부|광주|양주|경기/]];
