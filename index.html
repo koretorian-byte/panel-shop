@@ -122,12 +122,11 @@ const SHIP=[
   {id:'D',label:'전라·경북·대구 (전주·광주·대구·구미·포항 등)',fee:240000},
   {id:'E',label:'경남·부산·울산 (부산·울산·창원·김해·진주 등)',fee:350000},
   {id:'COD',label:'착불 (배송비 수령 시 화물기사에게 지불)',fee:0},
-  {id:'PICK',label:'직접 수령 (남양주 창고 방문)',fee:0},
 ];
 const SHIP_NOTE='제주·도서벽지 제외 · 1톤 화물 기준(약 30장 초과 시 별도 협의) · 야간/주말·양중 별도';
 const shipSel=()=>SHIP.find(x=>x.id===document.getElementById('f_ship').value)||SHIP[0];
 const shipFee=()=>shipSel().fee;
-const shipTxt=()=>{const x=shipSel();return x.id==='COD'?'착불':x.id==='PICK'?'직접 수령 (0원)':x.label.split(' (')[0]+' '+fmt(x.fee)+'원';};
+const shipTxt=()=>{const x=shipSel();return x.id==='COD'?'착불':x.label.split(' (')[0]+' '+fmt(x.fee)+'원';};
 document.getElementById('f_ship').innerHTML=SHIP.map(x=>`<option value="${x.id}">🚚 배송: ${esc(x.label)}${x.fee?' — '+fmt(x.fee)+'원':''}</option>`).join('');
 try{const sv=localStorage.getItem('ship');if(sv&&SHIP.some(x=>x.id===sv))document.getElementById('f_ship').value=sv;}catch(e){}
 document.getElementById('f_ship').addEventListener('change',()=>{try{localStorage.setItem('ship',document.getElementById('f_ship').value);}catch(e){}buildText();});
