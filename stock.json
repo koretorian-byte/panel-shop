@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-26 00:31",
+ "updated": "2026-09-26 04:31",
  "items": [
   {
    "name": "우드1 19T 양면",
@@ -27,7 +27,7 @@
    "spec": "19T 1220x2440 양면",
    "unit": "장",
    "price": 80000,
-   "available": true,
+   "available": false,
    "eta": "",
    "photo": ""
   },
@@ -97,7 +97,7 @@
    "spec": "19T 1220x2440 양면",
    "unit": "장",
    "price": 80000,
-   "available": true,
+   "available": false,
    "eta": "",
    "photo": ""
   },
