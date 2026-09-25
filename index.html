@@ -2,49 +2,73 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>SOJAE 素材 판재 주문 계산기</title>
+<meta name="description" content="SOJAE 素材 우드보드·우드 엣지·패브릭 보드 주문 계산기. 품목을 고르면 총액이 바로 계산되고 온라인 접수까지 가능합니다.">
+<meta property="og:title" content="SOJAE 素材 판재 주문 계산기">
+<meta property="og:description" content="품목을 고르면 총액이 바로 계산되고 주문 접수까지 가능합니다.">
+<meta property="og:image" content="https://koretorian-byte.github.io/panel-shop/logo.png">
+<meta property="og:type" content="website">
 <link rel="icon" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<meta name="theme-color" content="#ffffff">
 <style>
-  :root{--bg:#fafafa;--card:#fff;--line:#e5e7eb;--text:#111;--muted:#6b7280;--accent:#2563eb;--ok:#16a34a;--warn:#dc2626}
-  *{box-sizing:border-box} body{margin:0;font-family:-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;background:var(--bg);color:var(--text)}
+  :root{--bg:#fafafa;--card:#fff;--line:#e5e7eb;--text:#111;--muted:#6b7280;--accent:#2563eb;--ok:#16a34a;--warn:#dc2626;--eta:#b45309}
+  *{box-sizing:border-box} html{-webkit-text-size-adjust:100%}
+  body{margin:0;font-family:-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;background:var(--bg);color:var(--text)}
+  button{touch-action:manipulation;cursor:pointer;font-family:inherit}
   header{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);padding:10px 14px;z-index:5}
-  header h1{font-size:16px;margin:0} .home{margin-left:auto;font-size:12px;color:var(--accent);text-decoration:none;border:1px solid #bfdbfe;background:#eff6ff;border-radius:999px;padding:4px 10px;white-space:nowrap} .brand{display:flex;align-items:center;gap:10px;margin-bottom:4px} .brand img{height:26px;width:auto} .upd{font-size:12px;color:var(--muted)}
-  .tabs{display:flex;gap:6px;margin-top:8px;overflow-x:auto} .tabs button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;white-space:nowrap}
+  .wrap{max-width:760px;margin:0 auto}
+  header h1{font-size:16px;margin:0}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:4px} .brand img{height:26px;width:auto}
+  .home{margin-left:auto;font-size:12px;color:var(--accent);text-decoration:none;border:1px solid #bfdbfe;background:#eff6ff;border-radius:999px;padding:4px 10px;white-space:nowrap}
+  .upd{font-size:12px;color:var(--muted)}
+  .search{width:100%;height:36px;border:1px solid var(--line);border-radius:8px;padding:0 10px;font-size:14px;margin-top:8px}
+  .tabs{display:flex;gap:6px;margin-top:8px;overflow-x:auto;scrollbar-width:none} .tabs::-webkit-scrollbar{display:none}
+  .tabs button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;white-space:nowrap}
   .tabs button.on{background:var(--text);color:#fff;border-color:var(--text)}
+  .tabs button small{opacity:.6;margin-left:3px;font-size:11px}
   main{padding:10px 12px 140px;max-width:760px;margin:0 auto}
+  .grp{font-size:13px;font-weight:700;color:var(--muted);margin:14px 2px 6px} .grp:first-child{margin-top:4px}
   .item{display:grid;grid-template-columns:64px 1fr auto;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px}
-  .ph{width:64px;height:64px;border-radius:8px;background:#eee;object-fit:cover;display:block}
+  .ph{width:64px;height:64px;border-radius:8px;background:#f1f1f1;object-fit:cover;display:flex;align-items:center;justify-content:center;font-size:12px;color:#9ca3af;font-weight:700;text-align:center;line-height:1.2;overflow:hidden}
   .nm{font-weight:700;font-size:15px} .sp{font-size:12px;color:var(--muted);margin-top:2px}
-  .pr{font-size:14px;margin-top:4px} .st{font-size:12px} .st.low{color:#b45309} .st.ok{color:var(--ok)}
+  .pr{font-size:14px;margin-top:4px} .st{font-size:12px;margin-top:2px} .st.low{color:var(--eta)} .st.ok{color:var(--ok)}
   .qty{display:flex;align-items:center;gap:4px} .qty button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:#fff;font-size:18px}
   .qty input{width:44px;height:34px;text-align:center;border:1px solid var(--line);border-radius:8px;font-size:15px}
+  .qty input::-webkit-outer-spin-button,.qty input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0} .qty input{-moz-appearance:textfield}
   .item.sel{border-color:var(--accent);box-shadow:0 0 0 2px #dbeafe}
+  .empty{padding:40px 10px;text-align:center;color:var(--muted);font-size:14px} .empty button{margin-top:10px;border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 14px;font-size:13px}
   .cartbox{max-width:760px;margin:0 auto 6px;border:1px solid var(--line);border-radius:10px;background:#fafafa;max-height:126px;overflow-y:auto;display:none;overscroll-behavior:contain}
   .cartbox.open{display:block}
   .crow{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:4px 10px;min-height:42px;border-bottom:1px solid var(--line);font-size:13px}
   .crow:last-child{border-bottom:none} .crow .cn{font-weight:600} .crow .cs{font-size:11px;color:var(--muted)} .crow .ca{text-align:right;white-space:nowrap}
+  .crow .eta{color:var(--eta)}
   .crow .qty button{width:28px;height:28px;font-size:15px} .crow .qty input{width:38px;height:28px;font-size:13px} .crow .del{width:28px;height:28px;border:none;background:none;color:var(--warn);font-size:16px}
   .cempty{padding:10px;font-size:13px;color:var(--muted);text-align:center}
-  #cartToggle{background:none;border:none;font-size:12px;color:var(--accent);padding:0;cursor:pointer}
-  footer{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:10px 14px;box-shadow:0 -4px 16px rgba(0,0,0,.06)}
-  .tot{display:flex;justify-content:space-between;align-items:baseline;max-width:760px;margin:0 auto}
-  .tot b{font-size:20px} .sub{font-size:12px;color:var(--muted)}
+  #cartToggle{background:none;border:none;font-size:12px;color:var(--accent);padding:0}
+  footer{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom));box-shadow:0 -4px 16px rgba(0,0,0,.06)}
+  .tot{display:flex;justify-content:space-between;align-items:baseline;max-width:760px;margin:0 auto;gap:8px}
+  .tot b{font-size:20px;white-space:nowrap} .sub{font-size:12px;color:var(--muted)}
   .btns{display:flex;gap:8px;max-width:760px;margin:8px auto 0} .btns button{flex:1;height:42px;border-radius:10px;border:none;font-size:15px;font-weight:700}
-  .btns .p{background:var(--accent);color:#fff} .btns .s{background:#f3f4f6}
-  dialog{border:none;border-radius:14px;padding:16px;width:min(92vw,520px)} dialog pre{white-space:pre-wrap;font-size:13px;background:#f8f8f8;padding:10px;border-radius:8px;max-height:50vh;overflow:auto}
-  .search{width:100%;height:36px;border:1px solid var(--line);border-radius:8px;padding:0 10px;font-size:14px;margin-top:8px}
+  .btns .p{background:var(--accent);color:#fff} .btns .s{background:#f3f4f6} .btns button:disabled{opacity:.5;cursor:default}
+  dialog{border:none;border-radius:14px;padding:16px;width:min(92vw,520px)} dialog::backdrop{background:rgba(0,0,0,.35)}
+  dialog pre{white-space:pre-wrap;font-size:13px;background:#f8f8f8;padding:10px;border-radius:8px;max-height:32vh;overflow:auto;margin:0 0 6px}
   .frm{display:grid;gap:6px;margin-bottom:8px} .frm input{height:38px;border:1px solid var(--line);border-radius:8px;padding:0 10px;font-size:14px}
+  .frm input:invalid{border-color:#fca5a5}
   .msg{font-size:13px;min-height:18px;margin:4px 0} .msg.ok{color:var(--ok)} .msg.err{color:var(--warn)}
-  dialog pre{max-height:32vh}
+  .hint{font-size:12px;color:var(--muted);margin:0 0 8px}
+  @media (max-width:420px){.brand h1{font-size:15px}.home{padding:4px 8px}.tot b{font-size:18px}}
 </style>
 </head>
 <body>
 <header>
+  <div class="wrap">
   <div class="brand"><img src="logo.png" alt="SOJAE 素材"><h1>판재 주문 계산기</h1><a class="home" id="homeLink" href="#" target="_blank" rel="noopener">🏠 홈페이지 보기 ↗</a></div>
-  <div class="upd" id="upd">재고 불러오는 중…</div>
-  <input class="search" id="q" placeholder="품목 검색 (예: 우드3, 패브릭7, 엣지)">
+  <div class="upd" id="upd">품목 불러오는 중…</div>
+  <input class="search" id="q" placeholder="품목 검색 (예: 우드3, 패브릭7, 엣지 24)" autocomplete="off">
   <div class="tabs" id="tabs"></div>
+  </div>
 </header>
 <main id="list"></main>
 <footer>
@@ -53,112 +77,153 @@
   <div class="btns"><button class="s" id="clear">비우기</button><button class="s" id="quote">견적서만 보기</button><button class="p" id="order">주문/접수하기</button></div>
 </footer>
 <dialog id="dlg"><h3 style="margin:0 0 8px" id="dtitle">견적서</h3>
+  <p class="hint" id="dhint"></p>
   <div class="frm" id="frm">
-    <input id="f_company" placeholder="업체명 *">
-    <input id="f_contact" placeholder="담당자 / 연락처 *">
-    <input id="f_addr" placeholder="배송지">
-    <input id="f_note" placeholder="요청사항 (납기, 문의 등)">
+    <input id="f_company" placeholder="업체명 *" required maxlength="60">
+    <input id="f_contact" placeholder="담당자 / 연락처 *" required maxlength="60" autocomplete="tel">
+    <input id="f_addr" placeholder="배송지" maxlength="120">
+    <input id="f_note" placeholder="요청사항 (납기, 문의 등)" maxlength="300">
     <input id="f_web" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
   </div>
   <pre id="txt"></pre>
   <div id="msg" class="msg"></div>
-  <div class="btns"><button class="s" onclick="dlg.close()">닫기</button><button class="s" id="copy">복사</button><button class="s" id="share">공유</button><button class="p" id="send">주문/접수하기</button></div></dialog>
+  <div class="btns"><button class="s" id="closeBtn">닫기</button><button class="s" id="copy">복사</button><button class="s" id="share">공유</button><button class="p" id="send">주문/접수하기</button></div></dialog>
 <script>
 const fmt=n=>n.toLocaleString('ko-KR');
 const etaTxt=d=>{const [y,m,dd]=d.split('-');return `${Number(m)}/${Number(dd)}`;};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 // ▼ 요청 자동 접수용 서버 주소 (Cloudflare Worker). 비워두면 '요청 보내기' 대신 복사/공유만 가능.
 const ENDPOINT='https://panel-order.ws-kim.workers.dev/';
 // ▼ 소재 정보 홈페이지 (임시 주소 — 정식 도메인이 생기면 여기만 바꾸면 됨)
 const HOME_URL='https://sojae-material-world.koretorian.chatgpt.site/#materials';
 document.getElementById('homeLink').href=HOME_URL;
-let lastRows=[];
-let data=[],cart={},cat='우드보드 19T';
+const ORDER=['우드보드 19T','우드보드 10T','우드 엣지 24mm','우드 엣지 50mm','패브릭 보드 19T','패브릭 보드 10T'];
+const natural=(a,b)=>a.localeCompare(b,'ko',{numeric:true});
+let lastRows=[],data=[],cart={},cat='우드보드 19T',cartOpen=false;
+const LS=(k,v)=>{try{if(v===undefined)return JSON.parse(localStorage.getItem(k)||'null');localStorage.setItem(k,JSON.stringify(v));}catch(e){return null;}};
+function status(i){
+  if(i.available)return{cls:'ok',txt:'🟢 주문 가능',short:''};
+  if(i.eta)return{cls:'low',txt:'📦 '+etaTxt(i.eta)+' 입고 예정 (예약 주문 가능)',short:etaTxt(i.eta)+' 입고 예정'};
+  return{cls:'low',txt:'⚪ 입고 문의 (주문 가능)',short:'입고 문의'};
+}
 async function load(){
-  try{const r=await fetch('stock.json?'+Date.now(),{cache:'no-store'});const j=await r.json();data=j.items||[];upd.textContent='품목 기준: '+j.updated+' · 재고 수량은 주문 시 확인 후 안내드립니다';}
-  catch(e){upd.textContent='재고 정보를 불러오지 못했습니다.';}
-  const ORDER=['우드보드 19T','우드보드 10T','우드 엣지 24mm','우드 엣지 50mm','패브릭 보드 19T','패브릭 보드 10T'];const present=new Set(data.map(i=>i.category));const cats=['전체',...ORDER.filter(c=>present.has(c)),...[...present].filter(c=>!ORDER.includes(c))];
-  tabs.innerHTML=cats.map(c=>`<button class="${c===cat?'on':''}" data-c="${c}">${c}</button>`).join('');
+  try{
+    const r=await fetch('stock.json?'+Date.now(),{cache:'no-store'});const j=await r.json();
+    data=(j.items||[]).map(i=>({...i,q:(i.name+' '+(i.spec||'')+' '+i.category).replace(/\s+/g,'').toLowerCase()}));
+    data.sort((a,b)=>(ORDER.indexOf(a.category)-ORDER.indexOf(b.category))||natural(a.name,b.name));
+    upd.textContent='품목 기준: '+j.updated+' · 재고 수량은 주문 시 확인 후 안내드립니다';
+  }catch(e){
+    upd.textContent='품목 정보를 불러오지 못했습니다.';
+    list.innerHTML='<div class="empty">품목 정보를 불러오지 못했습니다.<br><button onclick="location.reload()">다시 시도</button></div>';return;
+  }
+  // 이전에 담아둔 품목 복원 (품목이 아직 있는 것만)
+  const saved=LS('cart')||{};cart={};for(const [k,v] of Object.entries(saved)){if(v>0&&data.some(i=>i.name===k))cart[k]=v;}
+  if(Object.keys(cart).length)cartOpen=true;
+  const present=new Set(data.map(i=>i.category));
+  const cats=['전체',...ORDER.filter(c=>present.has(c)),...[...present].filter(c=>!ORDER.includes(c))];
+  if(!cats.includes(cat))cat='전체';
+  tabs.innerHTML=cats.map(c=>`<button class="${c===cat?'on':''}" data-c="${esc(c)}">${esc(c)}<small>${c==='전체'?data.length:data.filter(i=>i.category===c).length}</small></button>`).join('');
   render();
 }
+function itemHtml(i){
+  const n=cart[i.name]||0,s=status(i);
+  const ph=i.photo?`<img class="ph" src="${esc(i.photo)}" alt="" loading="lazy">`:`<div class="ph">${esc(i.name.split(' ')[0])}</div>`;
+  return `<div class="item ${n?'sel':''}" data-n="${esc(i.name)}">
+    ${ph}
+    <div><div class="nm">${esc(i.name)}</div><div class="sp">${esc(i.spec||'')}</div>
+      <div class="pr">${fmt(i.price)}원 / ${esc(i.unit)}</div>
+      <div class="st ${s.cls}">${s.txt}</div></div>
+    <div class="qty"><button data-d="-1" aria-label="수량 줄이기">−</button><input type="number" inputmode="numeric" min="0" value="${n}" aria-label="수량"><button data-d="1" aria-label="수량 늘리기">+</button></div></div>`;
+}
 function render(){
-  const q=document.getElementById('q').value.trim();
-  list.innerHTML=data.filter(i=>(cat==='전체'||i.category===cat)&&(!q||i.name.includes(q))).map(i=>{
-    const n=cart[i.name]||0, low=!i.available;
-    return `<div class="item ${n?'sel':''}" data-n="${i.name}">
-      ${i.photo?`<img class="ph" src="${i.photo}" alt="">`:`<div class="ph"></div>`}
-      <div><div class="nm">${i.name}</div><div class="sp">${i.spec||''}</div>
-        <div class="pr">${fmt(i.price)}원 / ${i.unit}</div>
-        <div class="st ${low?'low':'ok'}">${low?(i.eta?'📦 '+etaTxt(i.eta)+' 입고 예정 (예약 주문 가능)':'⚪ 입고 문의 (주문 가능)'):'🟢 주문 가능'}</div></div>
-      <div class="qty"><button data-d="-1">−</button><input type="number" min="0" value="${n}"><button data-d="1">+</button></div></div>`}).join('');
+  const q=document.getElementById('q').value.replace(/\s+/g,'').toLowerCase();
+  const rows=data.filter(i=>(cat==='전체'||i.category===cat)&&(!q||i.q.includes(q)));
+  if(!rows.length){list.innerHTML=`<div class="empty">${q?'"'+esc(document.getElementById('q').value)+'" 에 맞는 품목이 없습니다.':'품목이 없습니다.'}</div>`;}
+  else if(cat==='전체'&&!q){
+    let html='',last='';rows.forEach(i=>{if(i.category!==last){html+=`<div class="grp">${esc(i.category)}</div>`;last=i.category;}html+=itemHtml(i);});list.innerHTML=html;
+  }else list.innerHTML=rows.map(itemHtml).join('');
   total_();
 }
 function total_(){
   let sup=0,cnt=0;for(const [k,v] of Object.entries(cart)){if(v>0){const it=data.find(i=>i.name===k);if(it){sup+=it.price*v;cnt++;}}}
-  const vat=Math.round(sup*0.1);sup_el(sup,vat,cnt);renderCart();
+  const vat=Math.round(sup*0.1);
+  document.getElementById('sup').textContent=fmt(sup);document.getElementById('vat').textContent=fmt(vat);document.getElementById('cnt').textContent=cnt;document.getElementById('total').textContent=fmt(sup+vat)+'원';
+  document.getElementById('quote').disabled=document.getElementById('order').disabled=!cnt;
+  LS('cart',cart);renderCart();
 }
-let cartOpen=false;
 function renderCart(){
   const rows=Object.entries(cart).filter(([,v])=>v>0).map(([k,v])=>({k,v,it:data.find(i=>i.name===k)})).filter(r=>r.it);
   const box=document.getElementById('cartbox');
   document.getElementById('cartToggle').textContent=(cartOpen?'▼':'▲')+' 선택 품목 '+(rows.length?'('+rows.length+')':'보기');
   box.className='cartbox'+(cartOpen?' open':'');
   if(!rows.length){box.innerHTML='<div class="cempty">선택된 품목이 없습니다. 위 목록에서 + 를 눌러 담아 주세요.</div>';return;}
-  box.innerHTML=rows.map(({k,v,it})=>`<div class="crow" data-n="${k}">
-    <div><div class="cn">${k}</div><div class="cs">${it.spec||''} · ${fmt(it.price)}원/${it.unit}</div></div>
-    <div class="qty"><button data-d="-1">−</button><input type="number" min="0" value="${v}"><button data-d="1">+</button></div>
-    <div class="ca">${fmt(it.price*v)}원 <button class="del" title="빼기">×</button></div></div>`).join('');
+  box.innerHTML=rows.map(({k,v,it})=>{const s=status(it);return `<div class="crow" data-n="${esc(k)}">
+    <div><div class="cn">${esc(k)}</div><div class="cs">${esc(it.spec||'')} · ${fmt(it.price)}원/${esc(it.unit)}${s.short?` · <span class="eta">${s.short}</span>`:''}</div></div>
+    <div class="qty"><button data-d="-1" aria-label="수량 줄이기">−</button><input type="number" inputmode="numeric" min="0" value="${v}" aria-label="수량"><button data-d="1" aria-label="수량 늘리기">+</button></div>
+    <div class="ca">${fmt(it.price*v)}원 <button class="del" title="빼기" aria-label="빼기">×</button></div></div>`;}).join('');
 }
 document.getElementById('cartToggle').onclick=()=>{cartOpen=!cartOpen;renderCart();};
 function padMain(){document.getElementById('list').style.paddingBottom=(document.querySelector('footer').offsetHeight+16)+'px';}
 new ResizeObserver(padMain).observe(document.querySelector('footer'));
-document.getElementById('cartbox').addEventListener('click',e=>{
-  const row=e.target.closest('.crow');if(!row)return;const n=row.dataset.n;
-  if(e.target.classList.contains('del')){cart[n]=0;render();return;}
-  const b=e.target.closest('button[data-d]');if(!b)return;cart[n]=Math.max(0,(cart[n]||0)+Number(b.dataset.d));render();});
-document.getElementById('cartbox').addEventListener('change',e=>{if(e.target.type==='number'){const n=e.target.closest('.crow').dataset.n;cart[n]=Math.max(0,Math.floor(Number(e.target.value)||0));render();}});
-function sup_el(s,v,c){document.getElementById('sup').textContent=fmt(s);document.getElementById('vat').textContent=fmt(v);document.getElementById('cnt').textContent=c;document.getElementById('total').textContent=fmt(s+v)+'원';}
-list.addEventListener('click',e=>{const b=e.target.closest('button[data-d]');if(!b)return;const n=b.closest('.item').dataset.n;const it=data.find(i=>i.name===n);
-  let v=(cart[n]||0)+Number(b.dataset.d);v=Math.max(0,v);if(!cart[n]&&v>0&&!cartOpen)cartOpen=true;cart[n]=v;render();});
-list.addEventListener('change',e=>{if(e.target.type==='number'){const n=e.target.closest('.item').dataset.n;const it=data.find(i=>i.name===n);let v=Math.max(0,Math.floor(Number(e.target.value)||0));cart[n]=v;render();}});
-tabs.addEventListener('click',e=>{if(e.target.dataset.c){cat=e.target.dataset.c;[...tabs.children].forEach(b=>b.classList.toggle('on',b.dataset.c===cat));render();}});
+function setQty(n,v){v=Math.max(0,Math.min(9999,Math.floor(Number(v)||0)));if(!cart[n]&&v>0&&!cartOpen)cartOpen=true;cart[n]=v;render();}
+function qtyHandler(root){
+  root.addEventListener('click',e=>{const row=e.target.closest('[data-n]');if(!row)return;const n=row.dataset.n;
+    if(e.target.classList.contains('del')){setQty(n,0);return;}
+    const b=e.target.closest('button[data-d]');if(b)setQty(n,(cart[n]||0)+Number(b.dataset.d));});
+  root.addEventListener('change',e=>{if(e.target.type==='number'){setQty(e.target.closest('[data-n]').dataset.n,e.target.value);}});
+  root.addEventListener('focusin',e=>{if(e.target.type==='number')e.target.select();});
+}
+qtyHandler(list);qtyHandler(document.getElementById('cartbox'));
+tabs.addEventListener('click',e=>{const b=e.target.closest('button[data-c]');if(!b)return;cat=b.dataset.c;[...tabs.children].forEach(x=>x.classList.toggle('on',x.dataset.c===cat));render();window.scrollTo({top:0});});
 document.getElementById('q').addEventListener('input',render);
-clear.onclick=()=>{cart={};render();};
+clear.onclick=()=>{if(Object.keys(cart).some(k=>cart[k]>0)&&!confirm('선택한 품목을 모두 비울까요?'))return;cart={};render();};
+document.getElementById('closeBtn').onclick=()=>dlg.close();
 function openDlg(mode){
-  const rows=Object.entries(cart).filter(([,v])=>v>0).map(([k,v])=>{const it=data.find(i=>i.name===k);return {k,v,it};});
+  const rows=Object.entries(cart).filter(([,v])=>v>0).map(([k,v])=>{const it=data.find(i=>i.name===k);return {k,v,it};}).filter(r=>r.it);
   if(!rows.length){alert('품목을 먼저 선택해 주세요.');return;}
   lastRows=rows;msg.textContent='';msg.className='msg';
   const submit=mode==='order';
   document.getElementById('dtitle').textContent=submit?'주문/접수':'견적서';
+  document.getElementById('dhint').textContent=submit?'업체명과 담당자/연락처만 적으면 바로 접수됩니다. 담당자가 확인 후 연락드립니다.':'아래 내용을 복사하거나 공유해서 보내실 수 있습니다.';
   document.getElementById('frm').hidden=!submit;
   const b=document.getElementById('send');b.hidden=!submit;b.disabled=false;b.textContent="주문/접수하기";
+  if(submit){const c=LS('contact')||{};for(const id of ['f_company','f_contact','f_addr']){if(c[id]&&!document.getElementById(id).value)document.getElementById(id).value=c[id];}}
   if(submit&&!ENDPOINT){msg.className='msg err';msg.textContent='온라인 접수가 아직 연결되지 않았습니다. 아래 내용을 복사/공유로 보내주세요.';b.hidden=true;}
   buildText();dlg.showModal();
+  if(submit&&!document.getElementById('f_company').value)document.getElementById('f_company').focus();
 }
 quote.onclick=()=>openDlg('quote');
 document.getElementById('order').onclick=()=>openDlg('order');
 function buildText(){
-  let sup=0;const lines=lastRows.map(({k,v,it})=>{const a=it.price*v;sup+=a;return `- ${k} × ${v}${it.unit} = ${fmt(a)}원`;});
+  let sup=0;const lines=lastRows.map(({k,v,it})=>{const a=it.price*v;sup+=a;const s=status(it);return `- ${k} (${it.spec||''}) × ${v}${it.unit} = ${fmt(a)}원${s.short?' ['+s.short+']':''}`;});
   const vat=Math.round(sup*0.1);const g=id=>document.getElementById(id).value.trim();
   const head=document.getElementById('frm').hidden?'':`업체명: ${g('f_company')}\n담당자/연락처: ${g('f_contact')}\n배송지: ${g('f_addr')}\n요청사항: ${g('f_note')}\n\n`;
-  txt.textContent=`[판재 견적] ${new Date().toLocaleDateString('ko-KR')}\n${head}${lines.join('\n')}\n\n공급가 ${fmt(sup)}원\n부가세 ${fmt(vat)}원\n합계 ${fmt(sup+vat)}원\n(배송비 별도 · 재고는 주문 접수 후 확인하여 안내드립니다)`;
+  const now=new Date();
+  txt.textContent=`[SOJAE 素材 판재 견적] ${now.toLocaleDateString('ko-KR')} ${now.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}\n${head}${lines.join('\n')}\n\n공급가 ${fmt(sup)}원\n부가세 ${fmt(vat)}원\n합계 ${fmt(sup+vat)}원\n(배송비 별도 · 재고는 주문 접수 후 확인하여 안내드립니다 · 입고 예정 품목은 입고 후 출고)`;
 }
 ['f_company','f_contact','f_addr','f_note'].forEach(id=>document.getElementById(id).addEventListener('input',buildText));
+let sending=false;
 document.getElementById('send').onclick=async()=>{
+  if(sending)return;
   const g=id=>document.getElementById(id).value.trim();
-  if(!g('f_company')||!g('f_contact')){msg.className='msg err';msg.textContent='업체명과 담당자/연락처를 입력해 주세요.';return;}
-  const b=document.getElementById('send');b.disabled=true;b.textContent='접수 중…';
+  if(!g('f_company')||!g('f_contact')){msg.className='msg err';msg.textContent='업체명과 담당자/연락처를 입력해 주세요.';(g('f_company')?document.getElementById('f_contact'):document.getElementById('f_company')).focus();return;}
+  const b=document.getElementById('send');b.disabled=true;b.textContent='접수 중…';sending=true;
   try{
-    const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    const ctrl=new AbortController();const to=setTimeout(()=>ctrl.abort(),25000);
+    const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},signal:ctrl.signal,body:JSON.stringify({
       company:g('f_company'),contact:g('f_contact'),address:g('f_addr'),note:g('f_note'),website:g('f_web'),
       items:lastRows.map(({k,v,it})=>({name:k,qty:v,unit:it.unit,price:it.price})),text:txt.textContent})});
+    clearTimeout(to);
     const j=await r.json();
     if(!r.ok||!j.ok)throw new Error(j.error||r.status);
+    LS('contact',{f_company:g('f_company'),f_contact:g('f_contact'),f_addr:g('f_addr')});
     msg.className='msg ok';msg.textContent='접수되었습니다 (접수번호 '+(j.project||'')+'). 담당자가 확인 후 연락드립니다.';b.textContent='접수 완료';
     cart={};render();  // 같은 내용이 두 번 접수되지 않도록 비운다
-  }catch(e){msg.className='msg err';msg.textContent='전송 실패: '+e.message+' — 아래 복사/공유로 보내주세요.';b.disabled=false;b.textContent="주문/접수하기";}
+  }catch(e){msg.className='msg err';msg.textContent='전송 실패: '+(e.name==='AbortError'?'응답 시간 초과':e.message)+' — 아래 복사/공유로 보내주세요.';b.disabled=false;b.textContent="주문/접수하기";}
+  finally{sending=false;}
 };
 copy.onclick=async()=>{try{await navigator.clipboard.writeText(txt.textContent);copy.textContent='복사됨';setTimeout(()=>copy.textContent='복사',1500);}catch(e){alert('길게 눌러 복사해 주세요.');}};
-share.onclick=()=>{if(navigator.share)navigator.share({text:txt.textContent});else copy.onclick();};
+share.onclick=()=>{if(navigator.share)navigator.share({title:'SOJAE 素材 판재 견적',text:txt.textContent}).catch(()=>{});else copy.onclick();};
 load();
 </script>
 </body>
