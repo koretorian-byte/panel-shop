@@ -63,11 +63,12 @@
   .btns .p{background:var(--text);color:#fff} .btns .p:hover{background:#000} .btns .s{background:var(--soft);color:var(--text);border-color:var(--line)} .btns .s:hover{border-color:var(--text)} .btns button:disabled{opacity:.5;cursor:default}
   dialog{border:1px solid var(--line);border-radius:6px;padding:16px;width:min(92vw,520px);background:var(--card);color:var(--text)} dialog::backdrop{background:rgba(36,35,33,.4)} dialog h3{font-weight:500;letter-spacing:-.01em}
   dialog pre{white-space:pre-wrap;font-size:13px;background:var(--soft);padding:10px;border-radius:var(--r);max-height:32vh;overflow:auto;margin:0 0 6px}
-  .frm{display:grid;gap:6px;margin-bottom:8px;min-width:0} .frm input{width:100%;min-width:0;height:38px;border:1px solid var(--line);border-radius:var(--r);padding:0 10px;font-size:14px;background:#fff;color:var(--text)} .frm input:focus,.frm select:focus{outline:none;border-color:var(--accent)}
+  .frm{display:grid;gap:6px;margin-bottom:8px;min-width:0} .frm[hidden]{display:none} .frm input{width:100%;min-width:0;height:38px;border:1px solid var(--line);border-radius:var(--r);padding:0 10px;font-size:14px;background:#fff;color:var(--text)} .frm input:focus,.frm select:focus{outline:none;border-color:var(--accent)}
   .frm input:invalid:not(:placeholder-shown){border-color:#d99a93}
   .frm select{height:38px;border:1px solid var(--line);border-radius:var(--r);padding:0 10px;font-size:14px;background:#fff;color:var(--text);width:100%;max-width:100%;min-width:0;text-overflow:ellipsis;white-space:nowrap;overflow:hidden}
   .msg{font-size:13px;min-height:18px;margin:4px 0} .msg.ok{color:var(--accent)} .msg.err{color:var(--warn)}
   .hint{font-size:12px;color:var(--muted);margin:0 0 8px}
+  .pdfrow{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;background:var(--soft);border:1px solid var(--line);border-radius:var(--r);padding:6px 8px 6px 10px;margin:0 0 6px} .pdfrow .ok{color:var(--muted)} .pdfrow .acts{display:flex;gap:6px} .pdfrow button{height:28px;padding:0 10px;font-size:12.5px;border:1px solid var(--accent);color:var(--accent);background:#fff;border-radius:var(--r)} .pdfrow button:hover{background:var(--accent);color:#fff}
   .shrt{display:none} .sbtn{display:none;border:1px solid var(--line);background:var(--card);border-radius:var(--r);width:32px;height:30px;font-size:14px}
   .tabwrap{position:relative}
   .toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(10px);background:var(--text);color:#fff;font-size:13px;padding:8px 14px;border-radius:var(--r);opacity:0;pointer-events:none;transition:.2s;z-index:20;white-space:nowrap}
@@ -122,6 +123,7 @@
   </div>
   <pre id="txt"></pre>
   <div id="msg" class="msg" role="status" aria-live="polite"></div>
+  <div id="pdfrow" class="pdfrow" hidden></div>
   <div class="btns"><button class="s" id="closeBtn">닫기</button><button class="s" id="copy">복사</button><button class="s" id="pdf">PDF 저장/공유</button><button class="p" id="send">주문/접수하기</button></div></dialog>
 <script>
 const fmt=n=>n.toLocaleString('ko-KR');
@@ -262,7 +264,7 @@ document.getElementById('f_addr').addEventListener('input',e=>{if(shipTouched)re
 function openDlg(mode){
   const rows=Object.entries(cart).filter(([,v])=>v>0).map(([k,v])=>{const it=data.find(i=>i.name===k);return {k,v,it};}).filter(r=>r.it);
   if(!rows.length){alert('품목을 먼저 선택해 주세요.');return;}
-  lastRows=rows;msg.textContent='';msg.className='msg';
+  lastRows=rows;msg.textContent='';msg.className='msg';const pr=document.getElementById('pdfrow');pr.hidden=true;pr.innerHTML='';lastPdf=null;
   const submit=mode==='order';
   document.getElementById('dtitle').textContent=submit?'주문/접수':'견적서';
   document.getElementById('dhint').textContent=submit?'업체명과 담당자/연락처만 적으면 바로 접수됩니다. 담당자가 확인 후 연락드립니다.':'아래 내용을 복사하거나 PDF 견적서로 저장·공유하실 수 있습니다.';
@@ -372,26 +374,37 @@ async function makePdf(){
     return pdf.output('blob');
   }finally{fr.remove();}
 }
+let lastPdf=null;
 document.getElementById('pdf').onclick=async()=>{
   const b=document.getElementById('pdf');if(b.disabled)return;
   const now=new Date();const no=`Q${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
   const fname=`SOJAE_견적서_${no}.pdf`;
+  // 미리보기 탭은 클릭 직후(동기)에 열어야 팝업 차단에 걸리지 않음
+  const w=window.open('','_blank');
+  if(w){try{w.document.write('<!doctype html><title>SOJAE 素材 견적서</title><body style="font-family:sans-serif;color:#6b6862;padding:40px;text-align:center">견적서 PDF를 만드는 중입니다…</body>');}catch(e){}}
   b.disabled=true;const label=b.textContent;b.textContent='PDF 만드는 중…';
   try{
     const blob=await makePdf();
-    const file=new File([blob],fname,{type:'application/pdf'});
-    if(navigator.canShare&&navigator.canShare({files:[file]})){
-      try{await navigator.share({files:[file],title:'SOJAE 素材 견적서 '+no});}
-      catch(e){if(e.name!=='AbortError')downloadBlob(blob,fname);}
-    }else downloadBlob(blob,fname);
-    toast('견적서 PDF 준비 완료');
+    lastPdf={blob,name:fname,no};
+    const url=URL.createObjectURL(blob);
+    if(w)w.location.href=url;else downloadBlob(blob,fname);
+    showPdfRow();
   }catch(e){
-    // 대체: 인쇄 창 → "PDF로 저장"
-    const w=window.open('','_blank');
+    // 대체: 인쇄용 견적서 페이지를 그 탭에 띄우고 인쇄 → "PDF로 저장"
     if(!w){alert('PDF를 만들지 못했습니다. 팝업을 허용한 뒤 다시 눌러 주세요.');}
     else{w.document.open();w.document.write(quoteHtml());w.document.close();let printed=false;const go=()=>{if(printed)return;printed=true;try{w.focus();w.print();}catch(e2){}};w.onload=()=>setTimeout(go,400);setTimeout(go,1500);}
   }finally{b.disabled=false;b.textContent=label;}
 };
+// PDF를 만든 뒤 창 안에 "공유 / 다운로드" 줄을 보여준다 (공유는 버튼을 눌러야 열리는 OS 공유창)
+function showPdfRow(){
+  const row=document.getElementById('pdfrow');if(!row||!lastPdf)return;
+  const file=new File([lastPdf.blob],lastPdf.name,{type:'application/pdf'});
+  const canShare=!!(navigator.canShare&&navigator.canShare({files:[file]}));
+  row.innerHTML=`<span>📄 ${esc(lastPdf.name)} <span class="ok">— 새 탭에서 미리보기</span></span><span class="acts">${canShare?'<button type="button" id="pdfShare">공유</button>':''}<button type="button" id="pdfDl">다운로드</button></span>`;
+  row.hidden=false;
+  if(canShare)document.getElementById('pdfShare').onclick=async()=>{try{await navigator.share({files:[file],title:'SOJAE 素材 견적서 '+lastPdf.no});}catch(e){if(e.name!=='AbortError')downloadBlob(lastPdf.blob,lastPdf.name);}};
+  document.getElementById('pdfDl').onclick=()=>downloadBlob(lastPdf.blob,lastPdf.name);
+}
 function downloadBlob(blob,name){const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),30000);}
 load();
 </script>
