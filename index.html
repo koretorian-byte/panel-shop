@@ -56,6 +56,7 @@
   dialog pre{white-space:pre-wrap;font-size:13px;background:#f8f8f8;padding:10px;border-radius:8px;max-height:32vh;overflow:auto;margin:0 0 6px}
   .frm{display:grid;gap:6px;margin-bottom:8px} .frm input{height:38px;border:1px solid var(--line);border-radius:8px;padding:0 10px;font-size:14px}
   .frm input:invalid{border-color:#fca5a5}
+  .frm select{height:38px;border:1px solid var(--line);border-radius:8px;padding:0 10px;font-size:14px;background:#fff}
   .msg{font-size:13px;min-height:18px;margin:4px 0} .msg.ok{color:var(--ok)} .msg.err{color:var(--warn)}
   .hint{font-size:12px;color:var(--muted);margin:0 0 8px}
   .shrt{display:none} .sbtn{display:none;border:1px solid var(--line);background:#fff;border-radius:8px;width:32px;height:30px;font-size:14px}
@@ -93,6 +94,7 @@
 </footer>
 <dialog id="dlg"><h3 style="margin:0 0 8px" id="dtitle">견적서</h3>
   <p class="hint" id="dhint"></p>
+  <div class="frm"><select id="f_ship" aria-label="배송 지역"></select></div>
   <div class="frm" id="frm">
     <input id="f_company" placeholder="업체명 *" required maxlength="60">
     <input id="f_contact" placeholder="담당자 / 연락처 *" required maxlength="60" autocomplete="tel">
@@ -112,6 +114,23 @@ const ENDPOINT='https://panel-order.ws-kim.workers.dev/';
 // ▼ 소재 정보 홈페이지 (임시 주소 — 정식 도메인이 생기면 여기만 바꾸면 됨)
 const HOME_URL='https://sojae-material-world.koretorian.chatgpt.site/#materials';
 document.getElementById('homeLink').href=HOME_URL;
+// ▼ 배송비 (남양주 출고 · 1톤 화물 기준 · 부가세 별도). 금액만 바꾸면 견적/PDF/접수에 모두 반영됨
+const SHIP=[
+  {id:'A',label:'서울·경기 근거리 (남양주·구리·하남·서울 전역·성남·의정부·광주·양주)',fee:50000},
+  {id:'B',label:'경기 원거리·인천 (고양·김포·부천·인천·안양·수원·용인·파주·평택·화성·안산 등)',fee:100000},
+  {id:'C',label:'충청·강원 (대전·세종·천안·청주·원주·춘천·강릉 등)',fee:200000},
+  {id:'D',label:'전라·경북·대구 (전주·광주·대구·구미·포항 등)',fee:300000},
+  {id:'E',label:'경남·부산·울산 (부산·울산·창원·김해·진주 등)',fee:400000},
+  {id:'COD',label:'착불 (배송비 수령 시 화물기사에게 지불)',fee:0},
+  {id:'PICK',label:'직접 수령 (남양주 창고 방문)',fee:0},
+];
+const SHIP_NOTE='제주·도서벽지 제외 · 1톤 화물 기준(약 30장 초과 시 별도 협의) · 야간/주말·양중 별도';
+const shipSel=()=>SHIP.find(x=>x.id===document.getElementById('f_ship').value)||SHIP[0];
+const shipFee=()=>shipSel().fee;
+const shipTxt=()=>{const x=shipSel();return x.id==='COD'?'착불':x.id==='PICK'?'직접 수령 (0원)':x.label.split(' (')[0]+' '+fmt(x.fee)+'원';};
+document.getElementById('f_ship').innerHTML=SHIP.map(x=>`<option value="${x.id}">🚚 배송: ${esc(x.label)}${x.fee?' — '+fmt(x.fee)+'원':''}</option>`).join('');
+try{const sv=localStorage.getItem('ship');if(sv&&SHIP.some(x=>x.id===sv))document.getElementById('f_ship').value=sv;}catch(e){}
+document.getElementById('f_ship').addEventListener('change',()=>{try{localStorage.setItem('ship',document.getElementById('f_ship').value);}catch(e){}buildText();});
 const ORDER=['우드보드 19T','우드보드 10T','우드 엣지 24mm','우드 엣지 50mm','패브릭 보드 19T','패브릭 보드 10T'];
 const natural=(a,b)=>a.localeCompare(b,'ko',{numeric:true});
 let lastRows=[],data=[],cart={},cat='우드보드 19T',cartOpen=false;
@@ -217,7 +236,8 @@ function buildText(){
   const vat=Math.round(sup*0.1);const g=id=>document.getElementById(id).value.trim();
   const head=document.getElementById('frm').hidden?'':`업체명: ${g('f_company')}\n담당자/연락처: ${g('f_contact')}\n배송지: ${g('f_addr')}\n요청사항: ${g('f_note')}\n\n`;
   const now=new Date();
-  txt.textContent=`[SOJAE 素材 판재 견적] ${now.toLocaleDateString('ko-KR')} ${now.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}\n${head}${lines.join('\n')}\n\n공급가 ${fmt(sup)}원\n부가세 ${fmt(vat)}원\n합계 ${fmt(sup+vat)}원\n(배송비 별도 · 재고는 주문 접수 후 확인하여 안내드립니다 · 입고 예정 품목은 입고 후 출고)`;
+  const sf=shipFee(),svat=Math.round(sf*0.1);
+  txt.textContent=`[SOJAE 素材 판재 견적] ${now.toLocaleDateString('ko-KR')} ${now.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}\n${head}${lines.join('\n')}\n- 배송비: ${shipTxt()}\n\n공급가 ${fmt(sup+sf)}원 (자재 ${fmt(sup)} + 배송 ${fmt(sf)})\n부가세 ${fmt(vat+svat)}원\n합계 ${fmt(sup+vat+sf+svat)}원\n(${SHIP_NOTE} · 재고는 주문 접수 후 확인하여 안내드립니다 · 입고 예정 품목은 입고 후 출고)`;
 }
 ['f_company','f_contact','f_addr','f_note'].forEach(id=>document.getElementById(id).addEventListener('input',buildText));
 let sending=false;
@@ -229,7 +249,7 @@ document.getElementById('send').onclick=async()=>{
   try{
     const ctrl=new AbortController();const to=setTimeout(()=>ctrl.abort(),25000);
     const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},signal:ctrl.signal,body:JSON.stringify({
-      company:g('f_company'),contact:g('f_contact'),address:g('f_addr'),note:g('f_note'),website:g('f_web'),
+      company:g('f_company'),contact:g('f_contact'),address:g('f_addr'),note:('배송: '+shipTxt()+(g('f_note')?' / '+g('f_note'):'')),website:g('f_web'),shipping:shipFee(),
       items:lastRows.map(({k,v,it})=>({name:k,qty:v,unit:it.unit,price:it.price})),text:txt.textContent})});
     clearTimeout(to);
     const j=await r.json();
@@ -248,7 +268,8 @@ function quoteHtml(){
   const no=`Q${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
   let sup=0;const rows=lastRows.map(({k,v,it},i)=>{const a=it.price*v;sup+=a;const s=status(it);
     return `<tr><td class="c">${i+1}</td><td>${esc(k)}</td><td>${esc(it.spec||'')}</td><td class="c">${v}</td><td class="c">${esc(it.unit)}</td><td class="r">${fmt(it.price)}</td><td class="r">${fmt(a)}</td><td class="c small">${s.short?esc(s.short):''}</td></tr>`;}).join('');
-  const vat=Math.round(sup*0.1);
+  const vat=Math.round(sup*0.1);const sf=shipFee(),svat=Math.round(sf*0.1);
+  const shipRow=`<tr><td class="c">${lastRows.length+1}</td><td>배송비</td><td>${esc(shipSel().label.split(' (')[0])}</td><td class="c">1</td><td class="c">식</td><td class="r">${fmt(sf)}</td><td class="r">${fmt(sf)}</td><td class="c small">${shipSel().id==='COD'?'착불':''}</td></tr>`;
   const to=withForm&&g('f_company')?`<div class="box"><div class="lbl">수신</div><div><b>${esc(g('f_company'))}</b> 귀하${g('f_contact')?`<br><span class="small">담당자/연락처: ${esc(g('f_contact'))}</span>`:''}${g('f_addr')?`<br><span class="small">배송지: ${esc(g('f_addr'))}</span>`:''}</div></div>`:`<div class="box"><div class="lbl">수신</div><div>&nbsp;</div></div>`;
   return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>SOJAE 素材 견적서 ${no}</title>
 <style>
@@ -271,9 +292,9 @@ td.c,th.c{text-align:center} td.r,th.r{text-align:right} .small{font-size:11px;c
 <div class="top"><div><img src="${location.origin+location.pathname.replace(/[^/]*$/,'')}logo.png" alt="SOJAE 素材"><h1 style="margin-top:6px">견 적 서</h1></div>
 <div class="meta">견적번호 ${no}<br>견적일 ${dateS}<br>유효기간: 견적일로부터 7일</div></div>
 <div class="boxes">${to}<div class="box"><div class="lbl">공급자</div><div><b>SOJAE 素材</b><br><span class="small">판재 · 우드보드 / 우드 엣지 / 패브릭 보드</span></div></div></div>
-<table><thead><tr><th class="c" style="width:32px">No</th><th>품목</th><th>규격</th><th class="c" style="width:44px">수량</th><th class="c" style="width:40px">단위</th><th class="r" style="width:80px">단가(원)</th><th class="r" style="width:92px">금액(원)</th><th class="c" style="width:78px">비고</th></tr></thead><tbody>${rows}</tbody></table>
-<div class="sum"><div><span>공급가액</span><span>${fmt(sup)}원</span></div><div><span>부가세 (10%)</span><span>${fmt(vat)}원</span></div><div class="tot"><span>합계</span><span>${fmt(sup+vat)}원</span></div></div>
-<div class="note"><b>안내</b><br>· 배송비 별도, 재고는 주문 접수 후 확인하여 안내드립니다.<br>· '입고 예정' 표기 품목은 입고 후 출고됩니다.${withForm&&g('f_note')?`<br>· 요청사항: ${esc(g('f_note'))}`:''}</div>
+<table><thead><tr><th class="c" style="width:32px">No</th><th>품목</th><th>규격</th><th class="c" style="width:44px">수량</th><th class="c" style="width:40px">단위</th><th class="r" style="width:80px">단가(원)</th><th class="r" style="width:92px">금액(원)</th><th class="c" style="width:78px">비고</th></tr></thead><tbody>${rows}${shipRow}</tbody></table>
+<div class="sum"><div><span>공급가액</span><span>${fmt(sup+sf)}원</span></div><div><span>부가세 (10%)</span><span>${fmt(vat+svat)}원</span></div><div class="tot"><span>합계</span><span>${fmt(sup+vat+sf+svat)}원</span></div></div>
+<div class="note"><b>안내</b><br>· 배송: ${SHIP_NOTE}.<br>· 재고는 주문 접수 후 확인하여 안내드립니다.<br>· '입고 예정' 표기 품목은 입고 후 출고됩니다.${withForm&&g('f_note')?`<br>· 요청사항: ${esc(g('f_note'))}`:''}</div>
 <div class="foot">SOJAE 素材 · 판재 주문 계산기 ${esc(location.origin+location.pathname)}</div>
 </body></html>`;
 }

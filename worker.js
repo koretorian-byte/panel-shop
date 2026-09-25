@@ -82,14 +82,15 @@ export default {
       // 슬랙 푸시 (김플랫)
       try {
         const lines = items.map(it => `• ${it.name} × ${it.qty}${it.unit}`).join("\n");
-        const sup = items.reduce((a, it) => a + it.price * it.qty, 0);
+        const ship = Math.max(0, Number(body.shipping) || 0);
+        const sup = items.reduce((a, it) => a + it.price * it.qty, 0) + ship;
         const pageUrl = `https://www.notion.so/${page.id.replace(/-/g, "")}`;
         const text = [
           `📥 *새 주문 접수* — ${company}`,
           `담당자/연락처: ${contact}`,
           str(body.address) ? `배송지: ${str(body.address)}` : "",
           str(body.note) ? `요청사항: ${str(body.note)}` : "",
-          lines,
+          lines + (ship ? `\n• 배송비 ${ship.toLocaleString("ko-KR")}원` : ""),
           `공급가 ${sup.toLocaleString("ko-KR")}원 / 합계(VAT) ${Math.round(sup * 1.1).toLocaleString("ko-KR")}원`,
           missing.length ? `⚠ 품목 매칭 실패: ${missing.join(", ")}` : "",
           `<${pageUrl}|Notion 프로젝트 열기> (01_접수)`,
