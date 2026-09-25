@@ -58,22 +58,37 @@
   .frm input:invalid{border-color:#fca5a5}
   .msg{font-size:13px;min-height:18px;margin:4px 0} .msg.ok{color:var(--ok)} .msg.err{color:var(--warn)}
   .hint{font-size:12px;color:var(--muted);margin:0 0 8px}
-  @media (max-width:420px){.brand h1{font-size:15px}.home{padding:4px 8px}.tot b{font-size:18px}}
+  .shrt{display:none} .sbtn{display:none;border:1px solid var(--line);background:#fff;border-radius:8px;width:32px;height:30px;font-size:14px}
+  .tabwrap{position:relative}
+  @media (max-width:640px){
+    header{padding:8px 12px}
+    .brand{margin-bottom:0} .brand h1{font-size:14px;white-space:nowrap} .brand img{height:22px} .home{padding:3px 8px;font-size:11px}
+    .sbtn{display:inline-block} .upd{display:none} .full{display:none} .shrt{display:inline} .search{display:none;margin-top:6px;height:34px} header.sopen .search{display:block}
+    .tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-top:6px;padding-right:24px} .tabs::-webkit-scrollbar{display:none}
+    .tabs button{padding:4px 9px;font-size:12px} .tabs button small{display:none}
+    .tabwrap:after{content:"";position:absolute;right:0;top:0;bottom:0;width:28px;background:linear-gradient(90deg,rgba(255,255,255,0),#fff);pointer-events:none}
+    main{padding:8px 10px}
+    .item{padding:8px;gap:8px;grid-template-columns:52px 1fr auto;margin-bottom:6px} .ph{width:52px;height:52px;font-size:11px} .nm{font-size:14px} .pr{margin-top:2px}
+    footer{padding:6px 10px calc(6px + env(safe-area-inset-bottom))}
+    .cartbox{max-height:88px;margin-bottom:4px} .crow{min-height:38px;padding:2px 8px;font-size:12px} .crow .cs{display:none}
+    .tot{align-items:center} .tot b{font-size:17px} .sub{font-size:11px} .sub .vatw{display:none}
+    .btns{margin-top:6px} .btns button{height:36px;font-size:14px}
+  }
 </style>
 </head>
 <body>
 <header>
   <div class="wrap">
-  <div class="brand"><img src="logo.png" alt="SOJAE 素材"><h1>판재 주문 계산기</h1><a class="home" id="homeLink" href="#" target="_blank" rel="noopener">🏠 홈페이지 보기 ↗</a></div>
+  <div class="brand"><img src="logo.png" alt="SOJAE 素材"><h1><span class="full">판재 주문 계산기</span><span class="shrt">주문 계산기</span></h1><a class="home" id="homeLink" href="#" target="_blank" rel="noopener">🏠 홈페이지 보기 ↗</a><button class="sbtn" id="sbtn" aria-label="검색">🔍</button></div>
   <div class="upd" id="upd">품목 불러오는 중…</div>
   <input class="search" id="q" placeholder="품목 검색 (예: 우드3, 패브릭7, 엣지 24)" autocomplete="off">
-  <div class="tabs" id="tabs"></div>
+  <div class="tabwrap"><div class="tabs" id="tabs"></div></div>
   </div>
 </header>
 <main id="list"></main>
 <footer>
   <div class="cartbox" id="cartbox"></div>
-  <div class="tot"><div><button id="cartToggle">▲ 선택 품목 보기</button> <span class="sub">선택 <span id="cnt">0</span>품목 · 공급가 <span id="sup">0</span>원 · 부가세 <span id="vat">0</span>원</span></div><b id="total">0원</b></div>
+  <div class="tot"><div><button id="cartToggle">▲ 선택 품목 보기</button> <span class="sub">선택 <span id="cnt">0</span>품목 · 공급가 <span id="sup">0</span>원<span class="vatw"> · 부가세 <span id="vat">0</span>원</span></span></div><b id="total">0원</b></div>
   <div class="btns"><button class="s" id="clear">비우기</button><button class="s" id="quote">견적서만 보기</button><button class="p" id="order">주문/접수하기</button></div>
 </footer>
 <dialog id="dlg"><h3 style="margin:0 0 8px" id="dtitle">견적서</h3>
@@ -118,7 +133,8 @@ async function load(){
   }
   // 이전에 담아둔 품목 복원 (품목이 아직 있는 것만)
   const saved=LS('cart')||{};cart={};for(const [k,v] of Object.entries(saved)){if(v>0&&data.some(i=>i.name===k))cart[k]=v;}
-  if(Object.keys(cart).length)cartOpen=true;
+  if(Object.keys(cart).length&&!isMobile())cartOpen=true;
+  setTimeout(()=>{const on=tabs.querySelector('.on');if(on)on.scrollIntoView({inline:'center',block:'nearest'});},50);
   const present=new Set(data.map(i=>i.category));
   const cats=['전체',...ORDER.filter(c=>present.has(c)),...[...present].filter(c=>!ORDER.includes(c))];
   if(!cats.includes(cat))cat='전체';
@@ -165,7 +181,7 @@ function renderCart(){
 document.getElementById('cartToggle').onclick=()=>{cartOpen=!cartOpen;renderCart();};
 function padMain(){document.getElementById('list').style.paddingBottom=(document.querySelector('footer').offsetHeight+16)+'px';}
 new ResizeObserver(padMain).observe(document.querySelector('footer'));
-function setQty(n,v){v=Math.max(0,Math.min(9999,Math.floor(Number(v)||0)));if(!cart[n]&&v>0&&!cartOpen)cartOpen=true;cart[n]=v;render();}
+function setQty(n,v){v=Math.max(0,Math.min(9999,Math.floor(Number(v)||0)));if(!cart[n]&&v>0&&!cartOpen&&!isMobile())cartOpen=true;cart[n]=v;render();}
 function qtyHandler(root){
   root.addEventListener('click',e=>{const row=e.target.closest('[data-n]');if(!row)return;const n=row.dataset.n;
     if(e.target.classList.contains('del')){setQty(n,0);return;}
@@ -174,8 +190,10 @@ function qtyHandler(root){
   root.addEventListener('focusin',e=>{if(e.target.type==='number')e.target.select();});
 }
 qtyHandler(list);qtyHandler(document.getElementById('cartbox'));
-tabs.addEventListener('click',e=>{const b=e.target.closest('button[data-c]');if(!b)return;cat=b.dataset.c;[...tabs.children].forEach(x=>x.classList.toggle('on',x.dataset.c===cat));render();window.scrollTo({top:0});});
+tabs.addEventListener('click',e=>{const b=e.target.closest('button[data-c]');if(!b)return;cat=b.dataset.c;[...tabs.children].forEach(x=>x.classList.toggle('on',x.dataset.c===cat));render();window.scrollTo({top:0});b.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});});
 document.getElementById('q').addEventListener('input',render);
+const isMobile=()=>window.matchMedia('(max-width:640px)').matches;
+document.getElementById('sbtn').onclick=()=>{const h=document.querySelector('header');h.classList.toggle('sopen');if(h.classList.contains('sopen'))document.getElementById('q').focus();else{document.getElementById('q').value='';render();}};
 clear.onclick=()=>{if(Object.keys(cart).some(k=>cart[k]>0)&&!confirm('선택한 품목을 모두 비울까요?'))return;cart={};render();};
 document.getElementById('closeBtn').onclick=()=>dlg.close();
 function openDlg(mode){
