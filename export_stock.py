@@ -38,12 +38,17 @@ def main():
         if cat in ("우드", "우드보드"):
             sub = "우드보드 10T" if "10T" in spec else "우드보드 19T"
         elif cat in ("패브릭", "패브릭 보드", "패브릭 완성보드"):
+            import re
+            num = int((re.search(r"(\d+)", name) or [0, 0])[1])
             if name.endswith("보드 10T"):
                 sub = "패브릭 보드 10T"
+                if "단면" not in spec:
+                    spec = (spec or "10T 1220x3000") + " 단면"
             else:
                 sub = "패브릭 보드 19T"
-                if not spec:
-                    spec = "19T"
+                # 19T 접착품은 단면. 뒷면 클린터치보드 색은 임시 배정(홀수=Chocolate, 짝수=Oatmeal) — 추후 정리 예정
+                back = "Chocolate" if num % 2 else "Oatmeal"
+                spec = f"19T 단면 · 뒷면 클린터치 {back}"
         # 재고 수량은 외부에 내보내지 않는다 (경쟁사 노출 방지). 있음/없음만.
         items.append({"name": name, "category": sub, "spec": spec,
                       "unit": "롤" if cat == "우드 엣지" else "장",
