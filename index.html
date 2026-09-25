@@ -20,6 +20,13 @@
   .qty{display:flex;align-items:center;gap:4px} .qty button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:#fff;font-size:18px}
   .qty input{width:44px;height:34px;text-align:center;border:1px solid var(--line);border-radius:8px;font-size:15px}
   .item.sel{border-color:var(--accent);box-shadow:0 0 0 2px #dbeafe}
+  .cartbox{max-width:760px;margin:0 auto 6px;border:1px solid var(--line);border-radius:10px;background:#fafafa;max-height:38vh;overflow:auto;display:none}
+  .cartbox.open{display:block}
+  .crow{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:6px 10px;border-bottom:1px solid var(--line);font-size:13px}
+  .crow:last-child{border-bottom:none} .crow .cn{font-weight:600} .crow .cs{font-size:11px;color:var(--muted)} .crow .ca{text-align:right;white-space:nowrap}
+  .crow .qty button{width:28px;height:28px;font-size:15px} .crow .qty input{width:38px;height:28px;font-size:13px} .crow .del{width:28px;height:28px;border:none;background:none;color:var(--warn);font-size:16px}
+  .cempty{padding:10px;font-size:13px;color:var(--muted);text-align:center}
+  #cartToggle{background:none;border:none;font-size:12px;color:var(--accent);padding:0;cursor:pointer}
   footer{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:10px 14px;box-shadow:0 -4px 16px rgba(0,0,0,.06)}
   .tot{display:flex;justify-content:space-between;align-items:baseline;max-width:760px;margin:0 auto}
   .tot b{font-size:20px} .sub{font-size:12px;color:var(--muted)}
@@ -41,7 +48,8 @@
 </header>
 <main id="list"></main>
 <footer>
-  <div class="tot"><div><span class="sub">선택 <span id="cnt">0</span>품목 · 공급가 <span id="sup">0</span>원 · 부가세 <span id="vat">0</span>원</span></div><b id="total">0원</b></div>
+  <div class="cartbox" id="cartbox"></div>
+  <div class="tot"><div><button id="cartToggle">▲ 선택 품목 보기</button> <span class="sub">선택 <span id="cnt">0</span>품목 · 공급가 <span id="sup">0</span>원 · 부가세 <span id="vat">0</span>원</span></div><b id="total">0원</b></div>
   <div class="btns"><button class="s" id="clear">비우기</button><button class="s" id="quote">견적서만 보기</button><button class="p" id="order">주문/접수하기</button></div>
 </footer>
 <dialog id="dlg"><h3 style="margin:0 0 8px" id="dtitle">견적서</h3>
@@ -82,11 +90,29 @@ function render(){
 }
 function total_(){
   let sup=0,cnt=0;for(const [k,v] of Object.entries(cart)){if(v>0){const it=data.find(i=>i.name===k);if(it){sup+=it.price*v;cnt++;}}}
-  const vat=Math.round(sup*0.1);sup_el(sup,vat,cnt);
+  const vat=Math.round(sup*0.1);sup_el(sup,vat,cnt);renderCart();
 }
+let cartOpen=false;
+function renderCart(){
+  const rows=Object.entries(cart).filter(([,v])=>v>0).map(([k,v])=>({k,v,it:data.find(i=>i.name===k)})).filter(r=>r.it);
+  const box=document.getElementById('cartbox');
+  document.getElementById('cartToggle').textContent=(cartOpen?'▼':'▲')+' 선택 품목 '+(rows.length?'('+rows.length+')':'보기');
+  box.className='cartbox'+(cartOpen?' open':'');
+  if(!rows.length){box.innerHTML='<div class="cempty">선택된 품목이 없습니다. 위 목록에서 + 를 눌러 담아 주세요.</div>';return;}
+  box.innerHTML=rows.map(({k,v,it})=>`<div class="crow" data-n="${k}">
+    <div><div class="cn">${k}</div><div class="cs">${it.spec||''} · ${fmt(it.price)}원/${it.unit}</div></div>
+    <div class="qty"><button data-d="-1">−</button><input type="number" min="0" value="${v}"><button data-d="1">+</button></div>
+    <div class="ca">${fmt(it.price*v)}원 <button class="del" title="빼기">×</button></div></div>`).join('');
+}
+document.getElementById('cartToggle').onclick=()=>{cartOpen=!cartOpen;renderCart();};
+document.getElementById('cartbox').addEventListener('click',e=>{
+  const row=e.target.closest('.crow');if(!row)return;const n=row.dataset.n;
+  if(e.target.classList.contains('del')){cart[n]=0;render();return;}
+  const b=e.target.closest('button[data-d]');if(!b)return;cart[n]=Math.max(0,(cart[n]||0)+Number(b.dataset.d));render();});
+document.getElementById('cartbox').addEventListener('change',e=>{if(e.target.type==='number'){const n=e.target.closest('.crow').dataset.n;cart[n]=Math.max(0,Math.floor(Number(e.target.value)||0));render();}});
 function sup_el(s,v,c){document.getElementById('sup').textContent=fmt(s);document.getElementById('vat').textContent=fmt(v);document.getElementById('cnt').textContent=c;document.getElementById('total').textContent=fmt(s+v)+'원';}
 list.addEventListener('click',e=>{const b=e.target.closest('button[data-d]');if(!b)return;const n=b.closest('.item').dataset.n;const it=data.find(i=>i.name===n);
-  let v=(cart[n]||0)+Number(b.dataset.d);v=Math.max(0,v);cart[n]=v;render();});
+  let v=(cart[n]||0)+Number(b.dataset.d);v=Math.max(0,v);if(!cart[n]&&v>0&&!cartOpen)cartOpen=true;cart[n]=v;render();});
 list.addEventListener('change',e=>{if(e.target.type==='number'){const n=e.target.closest('.item').dataset.n;const it=data.find(i=>i.name===n);let v=Math.max(0,Math.floor(Number(e.target.value)||0));cart[n]=v;render();}});
 tabs.addEventListener('click',e=>{if(e.target.dataset.c){cat=e.target.dataset.c;[...tabs.children].forEach(b=>b.classList.toggle('on',b.dataset.c===cat));render();}});
 document.getElementById('q').addEventListener('input',render);
