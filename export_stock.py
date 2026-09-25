@@ -33,11 +33,23 @@ def main():
         files = pg["properties"].get("사진", {}).get("files") or []
         if files:
             photo = files[0].get("external", {}).get("url") or ""  # Notion 업로드 파일은 1시간 만료라 외부 링크만 사용
-        items.append({"name": name, "category": cat, "spec": spec,
+        # 계산기 탭용 세부 분류: 우드보드 10T/19T, 패브릭 보드 10T/19T (우드 엣지는 그대로)
+        sub = cat
+        if cat in ("우드", "우드보드"):
+            sub = "우드보드 10T" if "10T" in spec else "우드보드 19T"
+        elif cat in ("패브릭", "패브릭 보드", "패브릭 완성보드"):
+            if name.endswith("보드 10T"):
+                sub = "패브릭 보드 10T"
+            else:
+                sub = "패브릭 보드 19T"
+                if not spec:
+                    spec = "19T"
+        # 재고 수량은 외부에 내보내지 않는다 (경쟁사 노출 방지). 있음/없음만.
+        items.append({"name": name, "category": sub, "spec": spec,
                       "unit": "롤" if cat == "우드 엣지" else "장",
                       "price": get_number(pg, "판매가") or 0,
-                      "stock": get_number(pg, "현재고") or 0, "photo": photo})
-    order = {"우드": 0, "우드보드": 0, "우드 엣지": 1, "패브릭": 2, "패브릭 보드": 2}
+                      "available": (get_number(pg, "현재고") or 0) > 0, "photo": photo})
+    order = {"우드보드 19T": 0, "우드보드 10T": 1, "우드 엣지": 2, "패브릭 보드 19T": 3, "패브릭 보드 10T": 4}
     items.sort(key=lambda i: (order.get(i["category"], 9), i["name"]))
     with open("stock.json", "w", encoding="utf-8") as f:
         json.dump({"updated": dt.datetime.now(KST).strftime("%Y-%m-%d %H:%M"), "items": items}, f, ensure_ascii=False, indent=1)
