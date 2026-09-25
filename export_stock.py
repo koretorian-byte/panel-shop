@@ -37,6 +37,9 @@ def main():
         sub = cat
         if cat in ("우드", "우드보드"):
             sub = "우드보드 10T" if "10T" in spec else "우드보드 19T"
+        elif cat == "우드 엣지":
+            sub = "우드 엣지 24mm" if "24mm" in name else "우드 엣지 50mm"
+            spec = ("24mm" if "24mm" in name else "50mm") + " x 50m롤 · 두께 0.8mm"
         elif cat in ("패브릭", "패브릭 보드", "패브릭 완성보드"):
             import re
             num = int((re.search(r"(\d+)", name) or [0, 0])[1])
@@ -54,7 +57,7 @@ def main():
                       "unit": "롤" if cat == "우드 엣지" else "장",
                       "price": get_number(pg, "판매가") or 0,
                       "available": (get_number(pg, "현재고") or 0) > 0, "photo": photo})
-    order = {"우드보드 19T": 0, "우드보드 10T": 1, "우드 엣지": 2, "패브릭 보드 19T": 3, "패브릭 보드 10T": 4}
+    order = {"우드보드 19T": 0, "우드보드 10T": 1, "우드 엣지 24mm": 2, "우드 엣지 50mm": 3, "패브릭 보드 19T": 4, "패브릭 보드 10T": 5}
     items.sort(key=lambda i: (order.get(i["category"], 9), i["name"]))
     with open("stock.json", "w", encoding="utf-8") as f:
         json.dump({"updated": dt.datetime.now(KST).strftime("%Y-%m-%d %H:%M"), "items": items}, f, ensure_ascii=False, indent=1)

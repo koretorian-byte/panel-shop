@@ -75,7 +75,7 @@ let data=[],cart={},cat='우드보드 19T';
 async function load(){
   try{const r=await fetch('stock.json?'+Date.now(),{cache:'no-store'});const j=await r.json();data=j.items||[];upd.textContent='품목 기준: '+j.updated+' · 재고 수량은 주문 시 확인 후 안내드립니다';}
   catch(e){upd.textContent='재고 정보를 불러오지 못했습니다.';}
-  const ORDER=['우드보드 19T','우드보드 10T','우드 엣지','패브릭 보드 19T','패브릭 보드 10T'];const present=new Set(data.map(i=>i.category));const cats=['전체',...ORDER.filter(c=>present.has(c)),...[...present].filter(c=>!ORDER.includes(c))];
+  const ORDER=['우드보드 19T','우드보드 10T','우드 엣지 24mm','우드 엣지 50mm','패브릭 보드 19T','패브릭 보드 10T'];const present=new Set(data.map(i=>i.category));const cats=['전체',...ORDER.filter(c=>present.has(c)),...[...present].filter(c=>!ORDER.includes(c))];
   tabs.innerHTML=cats.map(c=>`<button class="${c===cat?'on':''}" data-c="${c}">${c}</button>`).join('');
   render();
 }
