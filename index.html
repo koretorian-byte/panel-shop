@@ -87,7 +87,7 @@
   </div>
   <pre id="txt"></pre>
   <div id="msg" class="msg"></div>
-  <div class="btns"><button class="s" id="closeBtn">닫기</button><button class="s" id="copy">복사</button><button class="s" id="share">공유</button><button class="p" id="send">주문/접수하기</button></div></dialog>
+  <div class="btns"><button class="s" id="closeBtn">닫기</button><button class="s" id="copy">복사</button><button class="s" id="share">공유</button><button class="s" id="pdf">PDF 저장</button><button class="p" id="send">주문/접수하기</button></div></dialog>
 <script>
 const fmt=n=>n.toLocaleString('ko-KR');
 const etaTxt=d=>{const [y,m,dd]=d.split('-');return `${Number(m)}/${Number(dd)}`;};
@@ -223,6 +223,48 @@ document.getElementById('send').onclick=async()=>{
   finally{sending=false;}
 };
 copy.onclick=async()=>{try{await navigator.clipboard.writeText(txt.textContent);copy.textContent='복사됨';setTimeout(()=>copy.textContent='복사',1500);}catch(e){alert('길게 눌러 복사해 주세요.');}};
+// PDF: 인쇄용 견적서 페이지를 새 창에 열고 인쇄 대화상자 → "PDF로 저장". (양식은 추후 교체 예정)
+function quoteHtml(){
+  const g=id=>document.getElementById(id).value.trim();const withForm=!document.getElementById('frm').hidden;
+  const now=new Date();const dateS=`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
+  const no=`Q${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
+  let sup=0;const rows=lastRows.map(({k,v,it},i)=>{const a=it.price*v;sup+=a;const s=status(it);
+    return `<tr><td class="c">${i+1}</td><td>${esc(k)}</td><td>${esc(it.spec||'')}</td><td class="c">${v}</td><td class="c">${esc(it.unit)}</td><td class="r">${fmt(it.price)}</td><td class="r">${fmt(a)}</td><td class="c small">${s.short?esc(s.short):''}</td></tr>`;}).join('');
+  const vat=Math.round(sup*0.1);
+  const to=withForm&&g('f_company')?`<div class="box"><div class="lbl">수신</div><div><b>${esc(g('f_company'))}</b> 귀하${g('f_contact')?`<br><span class="small">담당자/연락처: ${esc(g('f_contact'))}</span>`:''}${g('f_addr')?`<br><span class="small">배송지: ${esc(g('f_addr'))}</span>`:''}</div></div>`:`<div class="box"><div class="lbl">수신</div><div>&nbsp;</div></div>`;
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>SOJAE 素材 견적서 ${no}</title>
+<style>
+@page{size:A4;margin:16mm}
+body{font-family:-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#111;margin:0;font-size:12.5px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #111;padding-bottom:10px;margin-bottom:14px}
+.top img{height:34px} h1{font-size:24px;letter-spacing:6px;margin:0}
+.meta{text-align:right;font-size:12px;color:#444;line-height:1.6}
+.boxes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.box{border:1px solid #ccc;border-radius:6px;padding:10px 12px;line-height:1.6} .lbl{font-size:11px;color:#777;margin-bottom:2px}
+table{width:100%;border-collapse:collapse;margin-top:6px} th,td{border:1px solid #bbb;padding:6px 8px;font-size:12px} th{background:#f3f4f6;font-weight:700}
+td.c,th.c{text-align:center} td.r,th.r{text-align:right} .small{font-size:11px;color:#555}
+.sum{margin-top:12px;margin-left:auto;width:280px} .sum div{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #eee} .sum .tot{font-size:16px;font-weight:700;border-bottom:2px solid #111}
+.note{margin-top:18px;font-size:11.5px;color:#444;line-height:1.7} .note b{color:#111}
+.foot{margin-top:26px;text-align:center;font-size:11px;color:#777}
+@media screen{body{padding:24px;max-width:800px;margin:0 auto}.bar{position:sticky;top:0;background:#fff;padding:8px 0 12px;text-align:right}.bar button{padding:8px 14px;border-radius:8px;border:1px solid #ccc;background:#2563eb;color:#fff;font-size:14px;cursor:pointer}}
+@media print{.bar{display:none}}
+</style></head><body>
+<div class="bar"><button onclick="window.print()">🖨 인쇄 / PDF로 저장</button></div>
+<div class="top"><div><img src="${location.origin+location.pathname.replace(/[^/]*$/,'')}logo.png" alt="SOJAE 素材"><h1 style="margin-top:6px">견 적 서</h1></div>
+<div class="meta">견적번호 ${no}<br>견적일 ${dateS}<br>유효기간: 견적일로부터 7일</div></div>
+<div class="boxes">${to}<div class="box"><div class="lbl">공급자</div><div><b>SOJAE 素材</b><br><span class="small">판재 · 우드보드 / 우드 엣지 / 패브릭 보드</span></div></div></div>
+<table><thead><tr><th class="c" style="width:32px">No</th><th>품목</th><th>규격</th><th class="c" style="width:44px">수량</th><th class="c" style="width:40px">단위</th><th class="r" style="width:80px">단가(원)</th><th class="r" style="width:92px">금액(원)</th><th class="c" style="width:78px">비고</th></tr></thead><tbody>${rows}</tbody></table>
+<div class="sum"><div><span>공급가액</span><span>${fmt(sup)}원</span></div><div><span>부가세 (10%)</span><span>${fmt(vat)}원</span></div><div class="tot"><span>합계</span><span>${fmt(sup+vat)}원</span></div></div>
+<div class="note"><b>안내</b><br>· 배송비 별도, 재고는 주문 접수 후 확인하여 안내드립니다.<br>· '입고 예정' 표기 품목은 입고 후 출고됩니다.${withForm&&g('f_note')?`<br>· 요청사항: ${esc(g('f_note'))}`:''}</div>
+<div class="foot">SOJAE 素材 · 판재 주문 계산기 ${esc(location.origin+location.pathname)}</div>
+</body></html>`;
+}
+document.getElementById('pdf').onclick=()=>{
+  const w=window.open('','_blank');
+  if(!w){alert('팝업이 차단되었습니다. 팝업을 허용한 뒤 다시 눌러 주세요.');return;}
+  w.document.open();w.document.write(quoteHtml());w.document.close();
+  w.onload=()=>setTimeout(()=>{try{w.focus();w.print();}catch(e){}},400);
+};
 share.onclick=()=>{if(navigator.share)navigator.share({title:'SOJAE 素材 판재 견적',text:txt.textContent}).catch(()=>{});else copy.onclick();};
 load();
 </script>
