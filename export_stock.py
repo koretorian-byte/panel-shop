@@ -56,7 +56,9 @@ def main():
         items.append({"name": name, "category": sub, "spec": spec,
                       "unit": "롤" if cat == "우드 엣지" else "장",
                       "price": get_number(pg, "판매가") or 0,
-                      "available": (get_number(pg, "현재고") or 0) > 0, "photo": photo})
+                      "available": (get_number(pg, "현재고") or 0) > 0,
+                      "eta": (((pg["properties"].get("입고예정일") or {}).get("date") or {}).get("start") or "")[:10],
+                      "photo": photo})
     order = {"우드보드 19T": 0, "우드보드 10T": 1, "우드 엣지 24mm": 2, "우드 엣지 50mm": 3, "패브릭 보드 19T": 4, "패브릭 보드 10T": 5}
     items.sort(key=lambda i: (order.get(i["category"], 9), i["name"]))
     with open("stock.json", "w", encoding="utf-8") as f:
