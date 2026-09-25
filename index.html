@@ -127,7 +127,7 @@ const SHIP_NOTE='제주·도서벽지 제외 · 1톤 화물 기준(약 30장 초
 const shipSel=()=>SHIP.find(x=>x.id===document.getElementById('f_ship').value)||SHIP[0];
 const shipFee=()=>shipSel().fee;
 const shipTxt=()=>{const x=shipSel();return x.id==='COD'?'착불':x.label.split(' (')[0]+' '+fmt(x.fee)+'원';};
-document.getElementById('f_ship').innerHTML=SHIP.map(x=>`<option value="${x.id}">🚚 배송: ${esc(x.label)}${x.fee?' — '+fmt(x.fee)+'원':''}</option>`).join('');
+document.getElementById('f_ship').innerHTML=SHIP.map(x=>`<option value="${x.id}">🚚 ${esc(x.label)}${x.fee?' — '+fmt(x.fee)+'원':''}</option>`).join('');
 try{const sv=localStorage.getItem('ship');if(sv&&SHIP.some(x=>x.id===sv))document.getElementById('f_ship').value=sv;}catch(e){}
 document.getElementById('f_ship').addEventListener('change',()=>{try{localStorage.setItem('ship',document.getElementById('f_ship').value);}catch(e){}buildText();});
 const ORDER=['우드보드 19T','우드보드 10T','우드 엣지 24mm','우드 엣지 50mm','패브릭 보드 19T','패브릭 보드 10T'];
