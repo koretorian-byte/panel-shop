@@ -69,9 +69,10 @@
     header{padding:8px 12px}
     .brand{margin-bottom:0} .brand h1{font-size:14px;white-space:nowrap} .brand img{height:22px} .home{padding:3px 8px;font-size:11px}
     .sbtn{display:inline-block} .upd{display:none} .full{display:none} .shrt{display:inline} .search{display:none;margin-top:6px;height:34px} header.sopen .search{display:block}
-    .tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-top:6px;padding-right:24px} .tabs::-webkit-scrollbar{display:none}
-    .tabs button{padding:4px 9px;font-size:12px} .tabs button small{display:none}
-    .tabwrap:after{content:"";position:absolute;right:0;top:0;bottom:0;width:28px;background:linear-gradient(90deg,rgba(255,255,255,0),#fff);pointer-events:none}
+    .tabs{display:block;margin-top:6px}
+    .trow{display:flex;gap:5px;margin-top:5px} .trow button{flex:1;padding:6px 4px;font-size:12.5px;border-radius:8px;text-align:center;min-width:0;overflow:hidden;text-overflow:ellipsis}
+    .trow.sub button{flex:0 0 auto;padding:4px 12px;font-size:12px;border-radius:999px;background:#f3f4f6;border-color:#f3f4f6} .trow.sub button.on{background:#e0e7ff;color:#1e3a8a;border-color:#c7d2fe}
+    .trow.sub button small{display:inline;opacity:.6;font-size:11px;margin-left:3px}
     main{padding:8px 10px}
     .item{padding:8px;gap:8px;grid-template-columns:52px 1fr auto;margin-bottom:6px} .ph{width:52px;height:52px;font-size:11px} .nm{font-size:14px} .pr{margin-top:2px}
     footer{padding:6px 10px calc(6px + env(safe-area-inset-bottom))}
@@ -156,13 +157,27 @@ async function load(){
   // 이전에 담아둔 품목 복원 (품목이 아직 있는 것만)
   const saved=LS('cart')||{};cart={};for(const [k,v] of Object.entries(saved)){if(v>0&&data.some(i=>i.name===k))cart[k]=v;}
   if(Object.keys(cart).length&&!isMobile())cartOpen=true;
-  setTimeout(()=>{const on=tabs.querySelector('.on');if(on)on.scrollIntoView({inline:'center',block:'nearest'});},50);
+
   const present=new Set(data.map(i=>i.category));
   const cats=['전체',...ORDER.filter(c=>present.has(c)),...[...present].filter(c=>!ORDER.includes(c))];
   if(!cats.includes(cat))cat='전체';
-  tabs.innerHTML=cats.map(c=>`<button class="${c===cat?'on':''}" data-c="${esc(c)}">${esc(c)}<small>${c==='전체'?data.length:data.filter(i=>i.category===c).length}</small></button>`).join('');
+  allCats=cats;renderTabs();
   render();
 }
+let allCats=[];
+const GROUPS=[['우드보드',['19T','10T']],['우드 엣지',['24mm','50mm']],['패브릭 보드',['19T','10T']]];
+function renderTabs(){
+  const cnt=c=>c==='전체'?data.length:data.filter(i=>i.category===c).length;
+  if(!isMobile()){
+    tabs.innerHTML=allCats.map(c=>`<button class="${c===cat?'on':''}" data-c="${esc(c)}">${esc(c)}<small>${cnt(c)}</small></button>`).join('');return;
+  }
+  // 모바일: 1줄째 큰 분류(전체/우드보드/우드 엣지/패브릭 보드), 2줄째 세부(19T/10T, 24mm/50mm) — 가로 스크롤 없이 전부 보이게
+  const g=GROUPS.find(([name])=>cat.startsWith(name));
+  const row1=['전체',...GROUPS.map(x=>x[0])].map(name=>`<button class="${(name==='전체'?cat==='전체':cat.startsWith(name))?'on':''}" data-g="${esc(name)}">${esc(name)}</button>`).join('');
+  const row2=g?g[1].map(sub=>{const c=g[0]+' '+sub;return `<button class="sub ${c===cat?'on':''}" data-c="${esc(c)}">${esc(sub)}<small>${cnt(c)}</small></button>`;}).join(''):'';
+  tabs.innerHTML=`<div class="trow">${row1}</div>`+(row2?`<div class="trow sub">${row2}</div>`:'');
+}
+window.addEventListener('resize',()=>{if(data.length)renderTabs();});
 function itemHtml(i){
   const n=cart[i.name]||0,s=status(i);
   const ph=i.photo?`<img class="ph" src="${esc(i.photo)}" alt="" loading="lazy">`:`<div class="ph">${esc(i.name.split(' ')[0])}</div>`;
@@ -212,7 +227,11 @@ function qtyHandler(root){
   root.addEventListener('focusin',e=>{if(e.target.type==='number')e.target.select();});
 }
 qtyHandler(list);qtyHandler(document.getElementById('cartbox'));
-tabs.addEventListener('click',e=>{const b=e.target.closest('button[data-c]');if(!b)return;cat=b.dataset.c;[...tabs.children].forEach(x=>x.classList.toggle('on',x.dataset.c===cat));render();window.scrollTo({top:0});b.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});});
+tabs.addEventListener('click',e=>{
+  const gb=e.target.closest('button[data-g]');
+  if(gb){const name=gb.dataset.g;if(name==='전체')cat='전체';else{const g=GROUPS.find(x=>x[0]===name);const first=g[1].map(sub=>name+' '+sub).find(c=>allCats.includes(c));cat=first||name;}renderTabs();render();window.scrollTo({top:0});return;}
+  const b=e.target.closest('button[data-c]');if(!b)return;cat=b.dataset.c;renderTabs();render();window.scrollTo({top:0});
+  const on=tabs.querySelector('button.on:not([data-g])');if(on&&!isMobile())on.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});});
 document.getElementById('q').addEventListener('input',render);
 const isMobile=()=>window.matchMedia('(max-width:640px)').matches;
 document.getElementById('sbtn').onclick=()=>{const h=document.querySelector('header');h.classList.toggle('sopen');if(h.classList.contains('sopen'))document.getElementById('q').focus();else{document.getElementById('q').value='';render();}};
