@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-25 14:19",
+ "updated": "2026-09-25 17:27",
  "items": [
   {
    "name": "우드1 10T 단면",
@@ -218,30 +218,12 @@
    "photo": ""
   },
   {
-   "name": "우드1 엣지 24mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "24mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 2,
-   "photo": ""
-  },
-  {
    "name": "우드1 엣지 24mm 50m롤",
    "category": "우드 엣지",
    "spec": "24mm x 50m롤",
    "unit": "롤",
    "price": 15000,
-   "stock": 5,
-   "photo": ""
-  },
-  {
-   "name": "우드1 엣지 50mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "50mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 0,
+   "stock": 9,
    "photo": ""
   },
   {
@@ -254,30 +236,12 @@
    "photo": ""
   },
   {
-   "name": "우드10 엣지 24mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "24mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 2,
-   "photo": ""
-  },
-  {
    "name": "우드10 엣지 24mm 50m롤",
    "category": "우드 엣지",
    "spec": "24mm x 50m롤",
    "unit": "롤",
    "price": 15000,
-   "stock": 6,
-   "photo": ""
-  },
-  {
-   "name": "우드10 엣지 50mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "50mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 1,
+   "stock": 10,
    "photo": ""
   },
   {
@@ -286,16 +250,7 @@
    "spec": "50mm x 50m롤",
    "unit": "롤",
    "price": 15000,
-   "stock": 10,
-   "photo": ""
-  },
-  {
-   "name": "우드11 엣지 24mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "24mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 4,
+   "stock": 12,
    "photo": ""
   },
   {
@@ -304,16 +259,7 @@
    "spec": "24mm x 50m롤",
    "unit": "롤",
    "price": 15000,
-   "stock": 12,
-   "photo": ""
-  },
-  {
-   "name": "우드11 엣지 50mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "50mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 2,
+   "stock": 20,
    "photo": ""
   },
   {
@@ -322,16 +268,7 @@
    "spec": "50mm x 50m롤",
    "unit": "롤",
    "price": 15000,
-   "stock": 10,
-   "photo": ""
-  },
-  {
-   "name": "우드12 엣지 24mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "24mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 12,
+   "stock": 14,
    "photo": ""
   },
   {
@@ -340,16 +277,7 @@
    "spec": "24mm x 50m롤",
    "unit": "롤",
    "price": 15000,
-   "stock": 1,
-   "photo": ""
-  },
-  {
-   "name": "우드12 엣지 50mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "50mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 3,
+   "stock": 25,
    "photo": ""
   },
   {
@@ -358,16 +286,7 @@
    "spec": "50mm x 50m롤",
    "unit": "롤",
    "price": 15000,
-   "stock": 12,
-   "photo": ""
-  },
-  {
-   "name": "우드2 엣지 24mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "24mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 10,
+   "stock": 18,
    "photo": ""
   },
   {
@@ -376,16 +295,7 @@
    "spec": "24mm x 50m롤",
    "unit": "롤",
    "price": 15000,
-   "stock": 1,
-   "photo": ""
-  },
-  {
-   "name": "우드2 엣지 50mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "50mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 5,
+   "stock": 21,
    "photo": ""
   },
   {
@@ -394,16 +304,7 @@
    "spec": "50mm x 50m롤",
    "unit": "롤",
    "price": 15000,
-   "stock": 1,
-   "photo": ""
-  },
-  {
-   "name": "우드3 엣지 24mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "24mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 0,
+   "stock": 11,
    "photo": ""
   },
   {
@@ -416,30 +317,12 @@
    "photo": ""
   },
   {
-   "name": "우드3 엣지 50mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "50mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 3,
-   "photo": ""
-  },
-  {
    "name": "우드3 엣지 50mm 50m롤",
    "category": "우드 엣지",
    "spec": "50mm x 50m롤",
    "unit": "롤",
    "price": 15000,
-   "stock": 10,
-   "photo": ""
-  },
-  {
-   "name": "우드4 엣지 24mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "24mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 1,
+   "stock": 16,
    "photo": ""
   },
   {
@@ -448,16 +331,7 @@
    "spec": "24mm x 50m롤",
    "unit": "롤",
    "price": 15000,
-   "stock": 0,
-   "photo": ""
-  },
-  {
-   "name": "우드4 엣지 50mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "50mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 6,
+   "stock": 2,
    "photo": ""
   },
   {
@@ -466,16 +340,7 @@
    "spec": "50mm x 50m롤",
    "unit": "롤",
    "price": 15000,
-   "stock": 6,
-   "photo": ""
-  },
-  {
-   "name": "우드5 엣지 24mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "24mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 3,
+   "stock": 18,
    "photo": ""
   },
   {
@@ -484,16 +349,7 @@
    "spec": "24mm x 50m롤",
    "unit": "롤",
    "price": 15000,
-   "stock": 1,
-   "photo": ""
-  },
-  {
-   "name": "우드5 엣지 50mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "50mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 10,
+   "stock": 7,
    "photo": ""
   },
   {
@@ -502,16 +358,7 @@
    "spec": "50mm x 50m롤",
    "unit": "롤",
    "price": 15000,
-   "stock": 1,
-   "photo": ""
-  },
-  {
-   "name": "우드6 엣지 24mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "24mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 0,
+   "stock": 21,
    "photo": ""
   },
   {
@@ -524,30 +371,12 @@
    "photo": ""
   },
   {
-   "name": "우드6 엣지 50mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "50mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 1,
-   "photo": ""
-  },
-  {
    "name": "우드6 엣지 50mm 50m롤",
    "category": "우드 엣지",
    "spec": "50mm x 50m롤",
    "unit": "롤",
    "price": 15000,
-   "stock": 12,
-   "photo": ""
-  },
-  {
-   "name": "우드7 엣지 24mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "24mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 12,
+   "stock": 14,
    "photo": ""
   },
   {
@@ -556,16 +385,7 @@
    "spec": "24mm x 50m롤",
    "unit": "롤",
    "price": 15000,
-   "stock": 3,
-   "photo": ""
-  },
-  {
-   "name": "우드7 엣지 50mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "50mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 12,
+   "stock": 27,
    "photo": ""
   },
   {
@@ -574,16 +394,7 @@
    "spec": "50mm x 50m롤",
    "unit": "롤",
    "price": 15000,
-   "stock": 0,
-   "photo": ""
-  },
-  {
-   "name": "우드8 엣지 24mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "24mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 6,
+   "stock": 24,
    "photo": ""
   },
   {
@@ -592,16 +403,7 @@
    "spec": "24mm x 50m롤",
    "unit": "롤",
    "price": 15000,
-   "stock": 12,
-   "photo": ""
-  },
-  {
-   "name": "우드8 엣지 50mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "50mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 3,
+   "stock": 24,
    "photo": ""
   },
   {
@@ -610,16 +412,7 @@
    "spec": "50mm x 50m롤",
    "unit": "롤",
    "price": 15000,
-   "stock": 0,
-   "photo": ""
-  },
-  {
-   "name": "우드9 엣지 24mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "24mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 10,
+   "stock": 6,
    "photo": ""
   },
   {
@@ -628,16 +421,7 @@
    "spec": "24mm x 50m롤",
    "unit": "롤",
    "price": 15000,
-   "stock": 0,
-   "photo": ""
-  },
-  {
-   "name": "우드9 엣지 50mm 100m롤",
-   "category": "우드 엣지",
-   "spec": "50mm x 100m롤",
-   "unit": "롤",
-   "price": 15000,
-   "stock": 4,
+   "stock": 20,
    "photo": ""
   },
   {
@@ -646,7 +430,7 @@
    "spec": "50mm x 50m롤",
    "unit": "롤",
    "price": 15000,
-   "stock": 2,
+   "stock": 10,
    "photo": ""
   },
   {
