@@ -60,12 +60,17 @@
   dialog{border:none;border-radius:14px;padding:16px;width:min(92vw,520px)} dialog::backdrop{background:rgba(0,0,0,.35)}
   dialog pre{white-space:pre-wrap;font-size:13px;background:#f8f8f8;padding:10px;border-radius:8px;max-height:32vh;overflow:auto;margin:0 0 6px}
   .frm{display:grid;gap:6px;margin-bottom:8px} .frm input{height:38px;border:1px solid var(--line);border-radius:8px;padding:0 10px;font-size:14px}
-  .frm input:invalid{border-color:#fca5a5}
+  .frm input:invalid:not(:placeholder-shown){border-color:#fca5a5}
   .frm select{height:38px;border:1px solid var(--line);border-radius:8px;padding:0 10px;font-size:14px;background:#fff}
   .msg{font-size:13px;min-height:18px;margin:4px 0} .msg.ok{color:var(--ok)} .msg.err{color:var(--warn)}
   .hint{font-size:12px;color:var(--muted);margin:0 0 8px}
   .shrt{display:none} .sbtn{display:none;border:1px solid var(--line);background:#fff;border-radius:8px;width:32px;height:30px;font-size:14px}
   .tabwrap{position:relative}
+  .toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(10px);background:#111;color:#fff;font-size:13px;padding:8px 14px;border-radius:999px;opacity:0;pointer-events:none;transition:.2s;z-index:20;white-space:nowrap}
+  .toast.show{opacity:.92;transform:translateX(-50%)}
+  dialog{max-height:92vh;overflow:auto}
+  dialog .btns{flex-wrap:wrap;position:sticky;bottom:-16px;background:#fff;padding:8px 0 4px;margin-top:4px} dialog .btns button{flex:1 1 30%;min-width:0}
+  dialog .btns .p{flex-basis:100%}
   @media (max-width:640px){
     header{padding:8px 12px}
     .brand{margin-bottom:0} .brand h1{font-size:14px;white-space:nowrap} .brand img{height:22px} .home{padding:3px 8px;font-size:11px}
@@ -93,9 +98,10 @@
   </div>
 </header>
 <main id="list"></main>
+<div class="toast" id="toast"></div>
 <footer>
   <div class="cartbox" id="cartbox"></div>
-  <div class="tot"><div><button id="cartToggle">선택 품목 보기</button> <span class="sub">선택 <span id="cnt">0</span>품목<span class="vatw" hidden>공급가 <span id="sup">0</span>원 · 부가세 <span id="vat">0</span>원</span></span></div><div class="totr"><b id="total">0원</b><small>부가세 포함</small></div></div>
+  <div class="tot"><div><button id="cartToggle">선택 품목 보기</button> <span class="sub">선택 <span id="cnt">0</span>품목<span class="vatw" hidden>공급가 <span id="sup">0</span>원 · 부가세 <span id="vat">0</span>원</span></span></div><div class="totr"><b id="total">0원</b><small>부가세 포함 · 배송비 별도</small></div></div>
   <div class="btns"><button class="s" id="clear">비우기</button><button class="s" id="quote">견적서만 보기</button><button class="p" id="order">주문/접수하기</button></div>
 </footer>
 <dialog id="dlg"><h3 style="margin:0 0 8px" id="dtitle">견적서</h3>
@@ -202,7 +208,7 @@ function total_(){
   let sup=0,cnt=0;for(const [k,v] of Object.entries(cart)){if(v>0){const it=data.find(i=>i.name===k);if(it){sup+=it.price*v;cnt++;}}}
   const vat=Math.round(sup*0.1);
   document.getElementById('sup').textContent=fmt(sup);document.getElementById('vat').textContent=fmt(vat);document.getElementById('cnt').textContent=cnt;document.getElementById('total').textContent=fmt(sup+vat)+'원';
-  document.getElementById('quote').disabled=document.getElementById('order').disabled=!cnt;
+  document.getElementById('quote').disabled=document.getElementById('order').disabled=document.getElementById('clear').disabled=!cnt;
   LS('cart',cart);renderCart();
 }
 function renderCart(){
@@ -219,7 +225,9 @@ function renderCart(){
 document.getElementById('cartToggle').onclick=()=>{cartOpen=!cartOpen;renderCart();};
 function padMain(){document.getElementById('list').style.paddingBottom=(document.querySelector('footer').offsetHeight+16)+'px';}
 new ResizeObserver(padMain).observe(document.querySelector('footer'));
-function setQty(n,v){v=Math.max(0,Math.min(9999,Math.floor(Number(v)||0)));if(!cart[n]&&v>0&&!cartOpen&&!isMobile())cartOpen=true;cart[n]=v;render();}
+let toastT;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1400);}
+function setQty(n,v){v=Math.max(0,Math.min(9999,Math.floor(Number(v)||0)));const was=cart[n]||0;if(!was&&v>0&&!cartOpen&&!isMobile())cartOpen=true;cart[n]=v;render();
+  if(v>was)toast(`${n} ${v}${(data.find(i=>i.name===n)||{}).unit||''} 담김`);else if(v===0&&was)toast(`${n} 뺌`);}
 function qtyHandler(root){
   root.addEventListener('click',e=>{const row=e.target.closest('[data-n]');if(!row)return;const n=row.dataset.n;
     if(e.target.classList.contains('del')){setQty(n,0);return;}
@@ -238,6 +246,11 @@ const isMobile=()=>window.matchMedia('(max-width:640px)').matches;
 document.getElementById('sbtn').onclick=()=>{const h=document.querySelector('header');h.classList.toggle('sopen');if(h.classList.contains('sopen'))document.getElementById('q').focus();else{document.getElementById('q').value='';render();}};
 clear.onclick=()=>{if(Object.keys(cart).some(k=>cart[k]>0)&&!confirm('선택한 품목을 모두 비울까요?'))return;cart={};render();};
 document.getElementById('closeBtn').onclick=()=>dlg.close();
+dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close();});
+// 배송지에 지역명을 적으면 배송 권역을 자동 추천 (직접 고른 뒤에는 덮어쓰지 않음)
+const ZONE_KW=[['E',/부산|울산|창원|김해|진주|양산|거제|통영|경남/],['D',/전주|광주|대구|구미|포항|경주|안동|목포|여수|순천|익산|군산|전북|전남|경북/],['C',/대전|세종|천안|청주|충주|원주|춘천|강릉|속초|아산|충남|충북|강원/],['B',/고양|김포|부천|인천|안양|수원|용인|파주|평택|화성|안산|시흥|군포|의왕|과천|광명|오산|안성|이천|여주|양평|가평|포천|동두천/],['A',/남양주|구리|하남|서울|성남|의정부|광주|양주|경기/]];
+let shipTouched=false;document.getElementById('f_ship').addEventListener('change',()=>{shipTouched=true;});
+document.getElementById('f_addr').addEventListener('input',e=>{if(shipTouched)return;const v=e.target.value;for(const [id,re] of ZONE_KW){if(re.test(v)){document.getElementById('f_ship').value=id;buildText();break;}}});
 function openDlg(mode){
   const rows=Object.entries(cart).filter(([,v])=>v>0).map(([k,v])=>{const it=data.find(i=>i.name===k);return {k,v,it};}).filter(r=>r.it);
   if(!rows.length){alert('품목을 먼저 선택해 주세요.');return;}
@@ -260,7 +273,8 @@ function buildText(){
   const head=document.getElementById('frm').hidden?'':`업체명: ${g('f_company')}\n담당자/연락처: ${g('f_contact')}\n배송지: ${g('f_addr')}\n요청사항: ${g('f_note')}\n\n`;
   const now=new Date();
   const sf=shipFee(),svat=Math.round(sf*0.1);
-  txt.textContent=`[SOJAE 素材 판재 견적] ${now.toLocaleDateString('ko-KR')} ${now.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}\n${head}${lines.join('\n')}\n- 배송비: ${shipTxt()}\n\n공급가 ${fmt(sup+sf)}원 (자재 ${fmt(sup)} + 배송 ${fmt(sf)})\n부가세 ${fmt(vat+svat)}원\n합계 ${fmt(sup+vat+sf+svat)}원\n(${SHIP_NOTE} · 재고는 주문 접수 후 확인하여 안내드립니다 · 입고 예정 품목은 입고 후 출고)`;
+  const qno=`Q${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
+  txt.textContent=`[SOJAE 素材 판재 견적 ${qno}] ${now.toLocaleDateString('ko-KR')} ${now.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}\n${head}${lines.join('\n')}\n- 배송비: ${shipTxt()}\n\n공급가 ${fmt(sup+sf)}원 (자재 ${fmt(sup)} + 배송 ${fmt(sf)})\n부가세 ${fmt(vat+svat)}원\n합계 ${fmt(sup+vat+sf+svat)}원\n(${SHIP_NOTE} · 재고는 주문 접수 후 확인하여 안내드립니다 · 입고 예정 품목은 입고 후 출고)`;
 }
 ['f_company','f_contact','f_addr','f_note'].forEach(id=>document.getElementById(id).addEventListener('input',buildText));
 let sending=false;
@@ -278,7 +292,7 @@ document.getElementById('send').onclick=async()=>{
     const j=await r.json();
     if(!r.ok||!j.ok)throw new Error(j.error||r.status);
     LS('contact',{f_company:g('f_company'),f_contact:g('f_contact'),f_addr:g('f_addr')});
-    msg.className='msg ok';msg.textContent='접수되었습니다 (접수번호 '+(j.project||'')+'). 담당자가 확인 후 연락드립니다.';b.textContent='접수 완료';
+    msg.className='msg ok';msg.textContent='접수되었습니다 (접수번호 '+(j.project||'')+'). 담당자가 확인 후 연락드립니다. 이 창에서 견적서를 PDF로 저장하거나 복사해 두실 수 있어요.';b.textContent='접수 완료';toast('주문이 접수되었습니다');
     cart={};render();  // 같은 내용이 두 번 접수되지 않도록 비운다
   }catch(e){msg.className='msg err';msg.textContent='전송 실패: '+(e.name==='AbortError'?'응답 시간 초과':e.message)+' — 아래 복사/공유로 보내주세요.';b.disabled=false;b.textContent="주문/접수하기";}
   finally{sending=false;}
