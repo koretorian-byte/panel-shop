@@ -1,7 +1,7 @@
 /**
- * 판재 주문 계산기 → Notion 자동 접수 (Cloudflare Worker)
+ * SOJAE 온라인 견적 → Notion 자동 접수 (Cloudflare Worker)
  *
- * 하는 일: 계산기에서 "요청 보내기"를 누르면
+ * 하는 일: 온라인 견적 페이지에서 "주문/접수하기"를 누르면
  *   1) 「자재 프로젝트 보드」에 프로젝트 1건 생성 (업체명·연락처·배송지·요청사항)
  *   2) 「자재 사용 계획」에 품목별 행 생성 (판재 연결 + 수량, 유형=사용예정)
  *   → Notion 견적서 수식이 자동으로 견적을 만들어 줍니다.
@@ -45,7 +45,7 @@ export default {
       const today = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10); // KST
       const title = `[웹요청] ${company} ${today}`;
       const note = [str(body.note) && `요청사항: ${str(body.note)}`, str(body.address) && `배송지: ${str(body.address)}`,
-        "── 웹 계산기 요청 원문 ──", str(body.text, 1800)].filter(Boolean).join("\n");
+        "── 온라인 견적 요청 원문 ──", str(body.text, 1800)].filter(Boolean).join("\n");
 
       const projProps = {
         "이름": { title: [{ text: { content: title } }] },
@@ -141,7 +141,7 @@ async function findDb(n, name) {
   return db;
 }
 async function findPanel(n, dbId, name) {
-  // 계산기 품목명 → 판재 재고 현황 이름.
+  // 온라인 견적 품목명 → 판재 재고 현황 이름.
   //  우드보드·우드 엣지·'패브릭N 보드 10T' 는 이름 그대로,
   //  '패브릭N'(무늬) 은 완제품인 '패브릭N 보드 19T' 를 먼저 찾고, 없으면 '패브릭N 원단' 에 연결한다.
   const candidates = [name, `${name} 보드 19T`, `${name} 원단`];

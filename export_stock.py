@@ -1,4 +1,4 @@
-"""외부 공개 재고(Notion) → stock.json  (주문 계산기 페이지가 읽는 파일)
+"""외부 공개 재고(Notion) → stock.json  (온라인 견적 페이지가 읽는 파일)
 환경변수 NOTION_TOKEN 필요. 한 시간마다 GitHub Actions가 자동 실행합니다.
 """
 import datetime as dt
@@ -33,7 +33,7 @@ def main():
         files = pg["properties"].get("사진", {}).get("files") or []
         if files:
             photo = files[0].get("external", {}).get("url") or ""  # Notion 업로드 파일은 1시간 만료라 외부 링크만 사용
-        # 계산기 탭용 세부 분류: 우드보드 10T/19T, 패브릭 보드 10T/19T (우드 엣지는 그대로)
+        # 온라인 견적 탭용 세부 분류: 우드보드 10T/19T, 패브릭 보드 10T/19T (우드 엣지는 그대로)
         sub = cat
         if cat in ("우드", "우드보드"):
             sub = "우드보드 10T" if "10T" in spec else "우드보드 19T"
