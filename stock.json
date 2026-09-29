@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-29 11:15",
+ "updated": "2026-09-29 17:59",
  "items": [
   {
    "name": "우드1 19T 양면",
@@ -347,7 +347,7 @@
    "spec": "24mm x 50m롤 · 두께 0.8mm",
    "unit": "롤",
    "price": 15000,
-   "available": true,
+   "available": false,
    "eta": "",
    "photo": ""
   },
