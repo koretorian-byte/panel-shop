@@ -87,7 +87,7 @@
     .brand{margin-bottom:0} .brand h1{font-size:14.5px;white-space:nowrap} .brand h1 .eb{display:none} .brand img{height:22px} .home{padding:3px 8px;font-size:11px}
     .sbtn{display:inline-block} .upd{display:none} .full{display:none} .shrt{display:inline} .search{display:none;margin-top:6px;height:34px} header.sopen .search{display:block}
     .tabs{display:block;margin-top:6px}
-    .trow{display:flex;gap:5px;margin-top:5px} .trow button{flex:1;padding:6px 4px;font-size:12.5px;border-radius:var(--r);text-align:center;min-width:0;overflow:hidden;text-overflow:ellipsis}
+    .trow{display:flex;gap:5px;margin-top:5px} .trow button{flex:1;padding:6px 2px;font-size:12.5px;border-radius:var(--r);text-align:center;min-width:0;overflow:hidden;text-overflow:ellipsis}
     .trow.sub button{flex:0 0 auto;padding:4px 12px;font-size:12px;border-radius:var(--r);background:var(--soft);border-color:var(--soft)} .trow.sub button.on{background:var(--accent-soft);color:var(--accent);border-color:var(--accent-soft)}
     .trow.sub button small{display:inline;opacity:.6;font-size:11px;margin-left:3px}
     main{padding:8px 10px}
@@ -104,7 +104,7 @@
   <div class="wrap">
   <div class="brand"><img src="logo.png" alt="SOJAE 素材"><h1><span class="full">온라인 견적</span><span class="shrt">온라인 견적</span><small class="eb">Online Quote</small></h1><a class="home" id="homeLink" href="#" target="_blank" rel="noopener">홈페이지 보기 ↗</a><button class="sbtn" id="sbtn" aria-label="검색">🔍</button></div>
   <div class="upd" id="upd">품목 불러오는 중…</div>
-  <input class="search" id="q" placeholder="품목 검색 (예: 우드3, 패브릭7, 엣지 24)" autocomplete="off">
+  <input class="search" id="q" placeholder="품목 검색 (예: 우드3, 패브릭7, 엣지 24, 샘플)" autocomplete="off">
   <div class="tabwrap"><div class="tabs" id="tabs"></div></div>
   </div>
 </header>
@@ -149,15 +149,30 @@ const SHIP=[
   {id:'COD',label:'착불 (배송비 수령 시 화물기사에게 지불)',fee:0},
 ];
 const SHIP_NOTE='제주·도서벽지 제외 · 1톤 화물 기준(약 30장 초과 시 별도 협의) · 야간/주말·양중 별도';
-const shipSel=()=>SHIP.find(x=>x.id===document.getElementById('f_ship').value)||SHIP[0];
+// ▼ 샘플(샘플북·박스 샘플)만 주문할 때의 배송 선택지. 판재와 함께 주문하면 위 화물 배송비가 적용되고 샘플은 같이 실어 보냄
+const SHIP_SAMPLE=[
+  {id:'PARCEL',label:'택배 발송 (전국)',fee:3000,icon:'📦'},
+  {id:'PICKUP',label:'쇼룸 픽업 (남양주 · 배송비 없음)',fee:0,icon:'🏬'},
+];
+const SHIP_NOTE_SAMPLE='샘플 택배 3,000원 · 쇼룸 픽업 시 배송비 없음(방문 전 연락)';
+const sampleOnly=()=>lastRows.length>0&&lastRows.every(({it})=>it.category==='샘플');
+const shipList=()=>sampleOnly()?SHIP_SAMPLE:SHIP;
+const shipNote=()=>sampleOnly()?SHIP_NOTE_SAMPLE:SHIP_NOTE;
+const shipSel=()=>{const L=shipList();return L.find(x=>x.id===document.getElementById('f_ship').value)||L[0];};
 const shipFee=()=>shipSel().fee;
-const shipTxt=()=>{const x=shipSel();return x.id==='COD'?'착불':x.label.split(' (')[0]+' '+fmt(x.fee)+'원';};
-document.getElementById('f_ship').innerHTML=SHIP.map(x=>{const [nm,rest]=esc(x.label).split(' (');return `<option value="${x.id}">🚚 ${nm}${x.fee?' '+fmt(x.fee)+'원':''}${rest?' · '+rest.replace(/\)$/,''):''}</option>`;}).join('');
-try{const sv=localStorage.getItem('ship');if(sv&&SHIP.some(x=>x.id===sv))document.getElementById('f_ship').value=sv;}catch(e){}
-document.getElementById('f_ship').addEventListener('change',()=>{try{localStorage.setItem('ship',document.getElementById('f_ship').value);}catch(e){}buildText();});
-const ORDER=['우드보드 19T','우드보드 10T','우드 엣지 24mm','우드 엣지 50mm','패브릭 보드 19T','패브릭 보드 10T'];
+const shipTxt=()=>{const x=shipSel();return x.id==='COD'?'착불':x.id==='PICKUP'?'쇼룸 픽업':x.label.split(' (')[0]+' '+fmt(x.fee)+'원';};
+let shipMode='';
+function fillShip(){
+  const L=shipList(),mode=sampleOnly()?'S':'P',sel=document.getElementById('f_ship');
+  if(mode===shipMode&&sel.options.length)return;shipMode=mode;
+  sel.innerHTML=L.map(x=>{const [nm,rest]=esc(x.label).split(' (');return `<option value="${x.id}">${x.icon||'🚚'} ${nm}${x.fee?' '+fmt(x.fee)+'원':''}${rest?' · '+rest.replace(/\)$/,''):''}</option>`;}).join('');
+  try{const sv=localStorage.getItem('ship'+(mode==='S'?'_s':''));if(sv&&L.some(x=>x.id===sv))sel.value=sv;}catch(e){}
+}
+document.getElementById('f_ship').addEventListener('change',()=>{try{localStorage.setItem('ship'+(sampleOnly()?'_s':''),document.getElementById('f_ship').value);}catch(e){}buildText();});
+const ORDER=['우드보드 19T','우드보드 10T','우드 엣지 24mm','우드 엣지 50mm','패브릭 보드 19T','패브릭 보드 10T','샘플'];
 const natural=(a,b)=>a.localeCompare(b,'ko',{numeric:true});
 let lastRows=[],data=[],cart={},cat='우드보드 19T',cartOpen=false;
+fillShip();
 const LS=(k,v)=>{try{if(v===undefined)return JSON.parse(localStorage.getItem(k)||'null');localStorage.setItem(k,JSON.stringify(v));}catch(e){return null;}};
 function status(i){
   if(i.available)return{cls:'ok',txt:'<i class="dot"></i>주문 가능',short:''};
@@ -185,7 +200,7 @@ async function load(){
   render();
 }
 let allCats=[];
-const GROUPS=[['우드보드',['19T','10T']],['우드 엣지',['24mm','50mm']],['패브릭 보드',['19T','10T']]];
+const GROUPS=[['우드보드',['19T','10T']],['우드 엣지',['24mm','50mm']],['패브릭 보드',['19T','10T']],['샘플',[]]];
 function renderTabs(){
   const cnt=c=>c==='전체'?data.length:data.filter(i=>i.category===c).length;
   if(!isMobile()){
@@ -193,7 +208,8 @@ function renderTabs(){
   }
   // 모바일: 1줄째 큰 분류(전체/우드보드/우드 엣지/패브릭 보드), 2줄째 세부(19T/10T, 24mm/50mm) — 가로 스크롤 없이 전부 보이게
   const g=GROUPS.find(([name])=>cat.startsWith(name));
-  const row1=['전체',...GROUPS.map(x=>x[0])].map(name=>`<button class="${(name==='전체'?cat==='전체':cat.startsWith(name))?'on':''}" data-g="${esc(name)}">${esc(name)}</button>`).join('');
+  const SHORT={'우드 엣지':'엣지','패브릭 보드':'패브릭'};  // 모바일 1줄 탭은 짧게 (5개가 한 줄에 들어가도록)
+  const row1=['전체',...GROUPS.map(x=>x[0])].map(name=>`<button class="${(name==='전체'?cat==='전체':cat.startsWith(name))?'on':''}" data-g="${esc(name)}">${esc(SHORT[name]||name)}</button>`).join('');
   const row2=g?g[1].map(sub=>{const c=g[0]+' '+sub;return `<button class="sub ${c===cat?'on':''}" data-c="${esc(c)}">${esc(sub)}<small>${cnt(c)}</small></button>`;}).join(''):'';
   tabs.innerHTML=`<div class="trow">${row1}</div>`+(row2?`<div class="trow sub">${row2}</div>`:'');
 }
@@ -265,7 +281,7 @@ dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close();});
 // 배송지에 지역명을 적으면 배송 권역을 자동 추천 (직접 고른 뒤에는 덮어쓰지 않음)
 const ZONE_KW=[['E',/부산|울산|창원|김해|진주|양산|거제|통영|경남/],['D',/전주|광주|대구|구미|포항|경주|안동|목포|여수|순천|익산|군산|전북|전남|경북/],['C',/대전|세종|천안|청주|충주|원주|춘천|강릉|속초|아산|충남|충북|강원/],['B',/고양|김포|부천|인천|안양|수원|용인|파주|평택|화성|안산|시흥|군포|의왕|과천|광명|오산|안성|이천|여주|양평|가평|포천|동두천/],['A',/남양주|구리|하남|서울|성남|의정부|광주|양주|경기/]];
 let shipTouched=false;document.getElementById('f_ship').addEventListener('change',()=>{shipTouched=true;});
-document.getElementById('f_addr').addEventListener('input',e=>{if(shipTouched)return;const v=e.target.value;for(const [id,re] of ZONE_KW){if(re.test(v)){document.getElementById('f_ship').value=id;buildText();break;}}});
+document.getElementById('f_addr').addEventListener('input',e=>{if(shipTouched||sampleOnly())return;const v=e.target.value;for(const [id,re] of ZONE_KW){if(re.test(v)){document.getElementById('f_ship').value=id;buildText();break;}}});
 // 창(견적서/주문/미리보기)이 열린 동안 뒤 페이지가 스크롤되지 않도록 고정 (iOS 포함)
 let lockY=0,locks=0;
 function lockBody(){if(locks++)return;lockY=window.scrollY||0;document.body.style.top=(-lockY)+'px';document.body.classList.add('lock');}
@@ -274,7 +290,7 @@ dlg.addEventListener('close',unlockBody);
 function openDlg(mode){
   const rows=Object.entries(cart).filter(([,v])=>v>0).map(([k,v])=>{const it=data.find(i=>i.name===k);return {k,v,it};}).filter(r=>r.it);
   if(!rows.length){alert('품목을 먼저 선택해 주세요.');return;}
-  lastRows=rows;msg.textContent='';msg.className='msg';const pr=document.getElementById('pdfrow');pr.hidden=true;pr.innerHTML='';lastPdf=null;
+  lastRows=rows;fillShip();msg.textContent='';msg.className='msg';const pr=document.getElementById('pdfrow');pr.hidden=true;pr.innerHTML='';lastPdf=null;
   const submit=mode==='order';
   document.getElementById('dtitle').textContent=submit?'주문/접수':'견적서';
   document.getElementById('dhint').textContent=submit?'업체명과 담당자/연락처만 적으면 바로 접수됩니다. 담당자가 확인 후 연락드립니다.':'아래 내용을 복사하거나 PDF 견적서로 저장·공유하실 수 있습니다.';
@@ -294,7 +310,7 @@ function buildText(){
   const now=new Date();
   const sf=shipFee(),svat=Math.round(sf*0.1);
   const qno=`Q${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
-  txt.textContent=`[SOJAE 素材 견적 ${qno}] ${now.toLocaleDateString('ko-KR')} ${now.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}\n${head}${lines.join('\n')}\n- 배송비: ${shipTxt()}\n\n공급가 ${fmt(sup+sf)}원 (자재 ${fmt(sup)} + 배송 ${fmt(sf)})\n부가세 ${fmt(vat+svat)}원\n합계 ${fmt(sup+vat+sf+svat)}원\n(${SHIP_NOTE} · 재고는 주문 접수 후 확인하여 안내드립니다 · 입고 예정 품목은 입고 후 출고)`;
+  txt.textContent=`[SOJAE 素材 견적 ${qno}] ${now.toLocaleDateString('ko-KR')} ${now.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}\n${head}${lines.join('\n')}\n- 배송비: ${shipTxt()}\n\n공급가 ${fmt(sup+sf)}원 (자재 ${fmt(sup)} + 배송 ${fmt(sf)})\n부가세 ${fmt(vat+svat)}원\n합계 ${fmt(sup+vat+sf+svat)}원\n(${shipNote()} · 재고는 주문 접수 후 확인하여 안내드립니다 · 입고 예정 품목은 입고 후 출고)`;
 }
 ['f_company','f_contact','f_addr','f_note'].forEach(id=>{const el=document.getElementById(id);el.addEventListener('input',buildText);el.addEventListener('keydown',e=>{if(e.key==='Enter'&&!document.getElementById('send').hidden){e.preventDefault();document.getElementById('send').click();}});});
 let sending=false;
@@ -326,7 +342,7 @@ function quoteHtml(forPdf){
   let sup=0;const rows=lastRows.map(({k,v,it},i)=>{const a=it.price*v;sup+=a;const s=status(it);
     return `<tr><td class="c">${i+1}</td><td>${esc(k)}</td><td>${esc(it.spec||'')}</td><td class="c">${v}</td><td class="c">${esc(it.unit)}</td><td class="r">${fmt(it.price)}</td><td class="r">${fmt(a)}</td><td class="c small">${s.short?esc(s.short):''}</td></tr>`;}).join('');
   const vat=Math.round(sup*0.1);const sf=shipFee(),svat=Math.round(sf*0.1);
-  const shipRow=`<tr><td class="c">${lastRows.length+1}</td><td>배송비</td><td>${esc(shipSel().label.split(' (')[0])}</td><td class="c">1</td><td class="c">식</td><td class="r">${fmt(sf)}</td><td class="r">${fmt(sf)}</td><td class="c small">${shipSel().id==='COD'?'착불':''}</td></tr>`;
+  const shipRow=`<tr><td class="c">${lastRows.length+1}</td><td>배송비</td><td>${esc(shipSel().label.split(' (')[0])}</td><td class="c">1</td><td class="c">식</td><td class="r">${fmt(sf)}</td><td class="r">${fmt(sf)}</td><td class="c small">${shipSel().id==='COD'?'착불':shipSel().id==='PICKUP'?'방문 수령':''}</td></tr>`;
   const to=withForm&&g('f_company')?`<div class="box"><div class="lbl">수신</div><div><b>${esc(g('f_company'))}</b> 귀하${g('f_contact')?`<br><span class="small">담당자/연락처: ${esc(g('f_contact'))}</span>`:''}${g('f_addr')?`<br><span class="small">배송지: ${esc(g('f_addr'))}</span>`:''}</div></div>`:`<div class="box"><div class="lbl">수신</div><div>&nbsp;</div></div>`;
   return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>SOJAE 素材 견적서 ${no}</title>
 <style>
@@ -352,7 +368,7 @@ ${forPdf?'.bar{display:none} body{padding:40px 44px;max-width:none;width:794px;b
 <div class="boxes">${to}<div class="box"><div class="lbl">공급자</div><div><b>SOJAE 素材</b><br><span class="small">판재 · 우드보드 / 우드 엣지 / 패브릭 보드</span></div></div></div>
 <table><thead><tr><th class="c" style="width:32px">No</th><th>품목</th><th>규격</th><th class="c" style="width:44px">수량</th><th class="c" style="width:40px">단위</th><th class="r" style="width:80px">단가(원)</th><th class="r" style="width:92px">금액(원)</th><th class="c" style="width:78px">비고</th></tr></thead><tbody>${rows}${shipRow}</tbody></table>
 <div class="sum"><div><span>공급가액</span><span>${fmt(sup+sf)}원</span></div><div><span>부가세 (10%)</span><span>${fmt(vat+svat)}원</span></div><div class="tot"><span>합계</span><span>${fmt(sup+vat+sf+svat)}원</span></div></div>
-<div class="note"><b>안내</b><br>· 배송: ${SHIP_NOTE}.<br>· 재고는 주문 접수 후 확인하여 안내드립니다.<br>· '입고 예정' 표기 품목은 입고 후 출고됩니다.${withForm&&g('f_note')?`<br>· 요청사항: ${esc(g('f_note'))}`:''}</div>
+<div class="note"><b>안내</b><br>· 배송: ${shipNote()}.<br>· 재고는 주문 접수 후 확인하여 안내드립니다.<br>· '입고 예정' 표기 품목은 입고 후 출고됩니다.${withForm&&g('f_note')?`<br>· 요청사항: ${esc(g('f_note'))}`:''}</div>
 <div class="foot">SOJAE 素材 · 온라인 견적 ${esc(location.origin+location.pathname)}</div>
 </body></html>`;
 }

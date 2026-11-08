@@ -880,6 +880,26 @@
    "available": false,
    "eta": "2026-10-22",
    "photo": ""
+  },
+  {
+   "name": "무늬목 보드 샘플북",
+   "category": "샘플",
+   "spec": "무늬목 12종 컬렉션 · 12.25x15cm",
+   "unit": "권",
+   "price": 30000,
+   "available": true,
+   "eta": "",
+   "photo": ""
+  },
+  {
+   "name": "패브릭 보드 박스 샘플",
+   "category": "샘플",
+   "spec": "패브릭 24종 컬렉션 · 개별 10x10cm",
+   "unit": "박스",
+   "price": 30000,
+   "available": true,
+   "eta": "",
+   "photo": ""
   }
  ]
 }
