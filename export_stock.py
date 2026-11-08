@@ -45,7 +45,9 @@ def main():
             sub = "우드보드 10T" if "10T" in spec else "우드보드 19T"
         elif cat == "우드 엣지":
             sub = "우드 엣지 24mm" if "24mm" in name else "우드 엣지 50mm"
-            spec = ("24mm" if "24mm" in name else "50mm") + " x 50m롤 · 두께 0.8mm"
+            # 두께는 Notion '두께(mm)' 값을 쓰고, 비어 있으면 기본 0.8mm (패브릭 보드용 오크/월넛 엣지는 3mm)
+            t = f"{thick:g}" if thick else "0.8"
+            spec = ("24mm" if "24mm" in name else "50mm") + f" x 50m롤 · 두께 {t}mm" + (" · 패브릭 보드용" if thick and thick >= 2 else "")
         elif cat in ("패브릭", "패브릭 보드", "패브릭 완성보드"):
             import re
             num = int((re.search(r"(\d+)", name) or [0, 0])[1])
