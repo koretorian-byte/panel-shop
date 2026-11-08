@@ -252,6 +252,16 @@
    "photo": ""
   },
   {
+   "name": "월넛 엣지 24mm 50m롤",
+   "category": "우드 엣지 24mm",
+   "spec": "24mm x 50m롤 · 두께 3mm · 패브릭 보드용",
+   "unit": "롤",
+   "price": 15000,
+   "available": false,
+   "eta": "",
+   "photo": ""
+  },
+  {
    "name": "우드1 엣지 24mm 50m롤",
    "category": "우드 엣지 24mm",
    "spec": "24mm x 50m롤 · 두께 0.8mm",
@@ -368,16 +378,6 @@
    "unit": "롤",
    "price": 15000,
    "available": true,
-   "eta": "",
-   "photo": ""
-  },
-  {
-   "name": "월넛 엣지 24mm 50m롤",
-   "category": "우드 엣지 24mm",
-   "spec": "24mm x 50m롤 · 두께 3mm · 패브릭 보드용",
-   "unit": "롤",
-   "price": 15000,
-   "available": false,
    "eta": "",
    "photo": ""
   },

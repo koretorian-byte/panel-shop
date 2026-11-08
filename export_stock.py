@@ -75,7 +75,8 @@ def main():
                       "eta": (((pg["properties"].get("입고예정일") or {}).get("date") or {}).get("start") or "")[:10],
                       "photo": photo})
     order = {"우드보드 19T": 0, "우드보드 10T": 1, "우드 엣지 24mm": 2, "우드 엣지 50mm": 3, "패브릭 보드 19T": 4, "패브릭 보드 10T": 5, "샘플": 6}
-    items.sort(key=lambda i: (order.get(i["category"], 9), i["name"]))
+    pin = ["오크", "월넛"]  # 같은 탭 안에서 맨 위에 올릴 품목(순서대로). 페이지(index.html)에도 같은 규칙이 있음
+    items.sort(key=lambda i: (order.get(i["category"], 9), next((k for k, p in enumerate(pin) if i["name"].startswith(p)), len(pin)), i["name"]))
     with open("stock.json", "w", encoding="utf-8") as f:
         json.dump({"updated": dt.datetime.now(KST).strftime("%Y-%m-%d %H:%M"), "items": items}, f, ensure_ascii=False, indent=1)
     print(f"stock.json {len(items)}건 저장")

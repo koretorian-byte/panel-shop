@@ -195,7 +195,9 @@ async function load(){
   try{
     const r=await fetch('stock.json?'+Date.now(),{cache:'no-store'});const j=await r.json();
     data=(j.items||[]).map(i=>({...i,q:(i.name+' '+(i.spec||'')+' '+i.category).replace(/\s+/g,'').toLowerCase()}));
-    data.sort((a,b)=>(ORDER.indexOf(a.category)-ORDER.indexOf(b.category))||natural(a.name,b.name));
+    // 같은 탭 안에서는 PIN 순서(오크 → 월넛)를 먼저, 나머지는 이름순
+    const PIN=['오크','월넛'];const pin=n=>{const i=PIN.findIndex(p=>n.startsWith(p));return i<0?PIN.length:i;};
+    data.sort((a,b)=>(ORDER.indexOf(a.category)-ORDER.indexOf(b.category))||(pin(a.name)-pin(b.name))||natural(a.name,b.name));
     upd.textContent='품목 기준: '+j.updated+' · 재고 수량은 주문 시 확인 후 안내드립니다';
   }catch(e){
     upd.textContent='품목 정보를 불러오지 못했습니다.';
