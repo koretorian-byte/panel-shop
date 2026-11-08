@@ -68,6 +68,13 @@
   .frm select{height:38px;border:1px solid var(--line);border-radius:var(--r);padding:0 10px;font-size:14px;background:#fff;color:var(--text);width:100%;max-width:100%;min-width:0;text-overflow:ellipsis;white-space:nowrap;overflow:hidden}
   .msg{font-size:13px;min-height:18px;margin:4px 0} .msg.ok{color:var(--accent)} .msg.err{color:var(--warn)}
   .hint{font-size:12px;color:var(--muted);margin:0 0 8px}
+  .ph{cursor:zoom-in} .ph:hover{filter:brightness(.96)}
+  dialog.lb{padding:0;border:0;background:transparent;max-width:none;max-height:none;width:fit-content;height:fit-content;overflow:visible;margin:auto;inset:0;position:fixed} dialog.lb::backdrop{background:rgba(36,35,33,.72)}
+  .lbwrap{position:relative;background:var(--card);border-radius:6px;padding:10px;max-width:min(92vw,820px);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+  .lbwrap img{display:block;max-width:calc(92vw - 20px);max-height:min(72dvh,720px);width:auto;height:auto;margin:0 auto;border-radius:var(--r);background:#fff}
+  .lbwrap .noimg{width:min(80vw,420px);height:min(50dvh,300px);background:var(--soft);border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--muted);font-size:13px} .lbwrap .noimg .big{font-size:22px;font-weight:500;color:#9c988f;letter-spacing:.02em}
+  .lbwrap .cap{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;padding:10px 4px 2px;font-size:13px;color:var(--muted)} .lbwrap .cap b{color:var(--text);font-weight:500;font-size:15px}
+  .lbwrap .xbtn{top:-12px;right:-12px;background:var(--text);color:#fff;border-color:var(--text);z-index:1} .lbwrap .xbtn:hover{background:#000;color:#fff}
   dialog.pv{width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;border-radius:0;background:var(--bg);overflow:hidden} dialog.pv[open]{display:flex;flex-direction:column}
   .pvbar{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);font-size:13px;background:var(--card);padding-top:calc(10px + env(safe-area-inset-top))} .pvbar .xbtn{position:static}
   .pvbody{flex:1;overflow:auto;padding:12px;-webkit-overflow-scrolling:touch} .pvbody img{width:100%;height:auto;display:block;background:#fff;box-shadow:0 2px 12px rgba(36,35,33,.12)}
@@ -221,7 +228,7 @@ function renderTabs(){
 window.addEventListener('resize',()=>{if(data.length)renderTabs();});
 function itemHtml(i){
   const n=cart[i.name]||0,s=status(i);
-  const ph=i.photo?`<img class="ph" src="${esc(i.photo)}" alt="" loading="lazy">`:`<div class="ph">${esc(i.name.split(' ')[0])}</div>`;
+  const ph=i.photo?`<img class="ph" src="${esc(i.photo)}" alt="${esc(i.name)} 사진" loading="lazy" role="button" tabindex="0" title="크게 보기">`:`<div class="ph" role="button" tabindex="0" title="크게 보기">${esc(i.name.split(' ')[0])}</div>`;
   return `<div class="item ${n?'sel':''}" data-n="${esc(i.name)}">
     ${ph}
     <div><div class="nm">${esc(i.name)}</div><div class="sp">${esc(i.spec||'')}</div>
@@ -271,6 +278,18 @@ function qtyHandler(root){
   root.addEventListener('wheel',e=>{if(e.target.type==='number'&&document.activeElement===e.target)e.target.blur();},{passive:true});
 }
 qtyHandler(list);qtyHandler(document.getElementById('cartbox'));
+// 사진 칸을 누르면 화면 가운데에 크게 보기 (사진이 없으면 안내만)
+function openLightbox(name){
+  const it=data.find(i=>i.name===name);if(!it)return;
+  let lb=document.getElementById('lb');
+  if(!lb){lb=document.createElement('dialog');lb.id='lb';lb.className='lb';document.body.appendChild(lb);lb.addEventListener('click',e=>{if(e.target===lb)lb.close();});lb.addEventListener('close',unlockBody);}
+  const body=it.photo?`<img src="${esc(it.photo)}" alt="${esc(it.name)}">`:`<div class="noimg"><div class="big">${esc(it.name.split(' ')[0])}</div><div>사진 준비 중입니다</div></div>`;
+  lb.innerHTML=`<div class="lbwrap"><button type="button" class="xbtn" id="lbClose" aria-label="닫기">×</button>${body}<div class="cap"><b>${esc(it.name)}</b><span>${esc(it.spec||'')}</span><span>${fmt(it.price)}원 / ${esc(it.unit)}</span></div></div>`;
+  lb.querySelector('#lbClose').onclick=()=>lb.close();
+  lockBody();lb.showModal();
+}
+list.addEventListener('click',e=>{const ph=e.target.closest('.ph');if(!ph)return;const row=ph.closest('[data-n]');if(row)openLightbox(row.dataset.n);});
+list.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('ph')){e.preventDefault();const row=e.target.closest('[data-n]');if(row)openLightbox(row.dataset.n);}});
 tabs.addEventListener('click',e=>{
   const gb=e.target.closest('button[data-g]');
   if(gb){const name=gb.dataset.g;if(name==='전체')cat='전체';else{const g=GROUPS.find(x=>x[0]===name);const first=g[1].map(sub=>name+' '+sub).find(c=>allCats.includes(c));cat=first||name;}renderTabs();render();syncUrl();window.scrollTo({top:0});return;}
