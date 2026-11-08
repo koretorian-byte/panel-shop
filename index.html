@@ -195,12 +195,17 @@ async function load(){
 
   const present=new Set(data.map(i=>i.category));
   const cats=['전체',...ORDER.filter(c=>present.has(c)),...[...present].filter(c=>!ORDER.includes(c))];
+  // 주소로 탭 바로 열기: ?tab=sample / wood19 / wood10 / edge24 / edge50 / fabric19 / fabric10 / all (한글 탭 이름도 가능)
+  const want=TAB_KEY[(new URLSearchParams(location.search).get('tab')||location.hash.slice(1)||'').toLowerCase()]||decodeURIComponent(location.hash.slice(1)||'');
+  if(want&&cats.includes(want))cat=want;
   if(!cats.includes(cat))cat='전체';
   allCats=cats;renderTabs();
   render();
 }
 let allCats=[];
 const GROUPS=[['우드보드',['19T','10T']],['우드 엣지',['24mm','50mm']],['패브릭 보드',['19T','10T']],['샘플',[]]];
+const TAB_KEY={all:'전체',wood19:'우드보드 19T',wood10:'우드보드 10T',edge24:'우드 엣지 24mm',edge50:'우드 엣지 50mm',fabric19:'패브릭 보드 19T',fabric10:'패브릭 보드 10T',sample:'샘플',samples:'샘플'};
+const syncUrl=()=>{try{const k=Object.keys(TAB_KEY).find(k=>TAB_KEY[k]===cat&&k!=='samples');const u=new URL(location.href);if(k&&k!=='all')u.searchParams.set('tab',k);else u.searchParams.delete('tab');history.replaceState(null,'',u);}catch(e){}};
 function renderTabs(){
   const cnt=c=>c==='전체'?data.length:data.filter(i=>i.category===c).length;
   if(!isMobile()){
@@ -268,8 +273,8 @@ function qtyHandler(root){
 qtyHandler(list);qtyHandler(document.getElementById('cartbox'));
 tabs.addEventListener('click',e=>{
   const gb=e.target.closest('button[data-g]');
-  if(gb){const name=gb.dataset.g;if(name==='전체')cat='전체';else{const g=GROUPS.find(x=>x[0]===name);const first=g[1].map(sub=>name+' '+sub).find(c=>allCats.includes(c));cat=first||name;}renderTabs();render();window.scrollTo({top:0});return;}
-  const b=e.target.closest('button[data-c]');if(!b)return;cat=b.dataset.c;renderTabs();render();window.scrollTo({top:0});
+  if(gb){const name=gb.dataset.g;if(name==='전체')cat='전체';else{const g=GROUPS.find(x=>x[0]===name);const first=g[1].map(sub=>name+' '+sub).find(c=>allCats.includes(c));cat=first||name;}renderTabs();render();syncUrl();window.scrollTo({top:0});return;}
+  const b=e.target.closest('button[data-c]');if(!b)return;cat=b.dataset.c;renderTabs();render();syncUrl();window.scrollTo({top:0});
   const on=tabs.querySelector('button.on:not([data-g])');if(on&&!isMobile())on.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});});
 document.getElementById('q').addEventListener('input',render);
 document.getElementById('q').addEventListener('keydown',e=>{if(e.key==='Escape'){e.target.value='';render();}});
