@@ -79,6 +79,7 @@
   .pvbar{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);font-size:13px;background:var(--card);padding-top:calc(10px + env(safe-area-inset-top))} .pvbar .xbtn{position:static}
   .pvbody{flex:1;overflow:auto;padding:12px;-webkit-overflow-scrolling:touch} .pvbody img{width:100%;height:auto;display:block;background:#fff;box-shadow:0 2px 12px rgba(36,35,33,.12)}
   .pvacts{display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--line)} .pvacts button{flex:1;height:42px;border-radius:var(--r);border:1px solid transparent;font-size:14.5px;font-weight:500} .pvacts .p{background:var(--text);color:#fff} .pvacts .s{background:var(--soft);color:var(--text);border-color:var(--line)}
+  .shipinfo{font-size:12px;color:var(--muted);line-height:1.5;padding:2px 2px 0} .shipinfo b{color:var(--text);font-weight:500} .shipinfo a{color:var(--accent);text-decoration:none}
   .pdfrow{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;background:var(--soft);border:1px solid var(--line);border-radius:var(--r);padding:6px 8px 6px 10px;margin:0 0 6px} .pdfrow .ok{color:var(--muted)} .pdfrow .acts{display:flex;gap:6px} .pdfrow button{height:28px;padding:0 10px;font-size:12.5px;border:1px solid var(--accent);color:var(--accent);background:#fff;border-radius:var(--r)} .pdfrow button:hover{background:var(--accent);color:#fff}
   .shrt{display:none} .sbtn{display:none;border:1px solid var(--line);background:var(--card);border-radius:var(--r);width:32px;height:30px;font-size:14px}
   .tabwrap{position:relative}
@@ -125,7 +126,7 @@
 </footer>
 <dialog id="dlg"><button class="xbtn" id="xbtn" aria-label="닫기" title="닫기">×</button><h3 style="margin:0 0 8px" id="dtitle">견적서</h3>
   <p class="hint" id="dhint"></p>
-  <div class="frm"><select id="f_ship" aria-label="배송 지역"></select></div>
+  <div class="frm"><select id="f_ship" aria-label="배송 지역"></select><div id="shipInfo" class="shipinfo" hidden></div></div>
   <div class="frm" id="frm">
     <input id="f_company" placeholder="업체명 *" required maxlength="60">
     <input id="f_contact" placeholder="담당자 / 연락처 *" required maxlength="60" autocomplete="tel">
@@ -161,7 +162,11 @@ const SHIP_SAMPLE=[
   {id:'PARCEL',label:'택배 발송 (전국)',fee:3000,icon:'📦'},
   {id:'PICKUP',label:'쇼룸 픽업 (리노꼴렉뜨 청담 · 배송비 없음)',fee:0,icon:'🏬'},
 ];
-const SHIP_NOTE_SAMPLE='샘플 택배 3,000원 · 쇼룸 픽업(리노꼴렉뜨 청담) 시 배송비 없음 · 방문 전 연락';
+const PICKUP_ADDR='서울 강남구 도산대로 454, 3층 리노꼴렉뜨';
+const PICKUP_HOURS='월–토 10:00–18:00';
+const PICKUP_MAP='https://map.naver.com/p/search/'+encodeURIComponent('리노꼴렉뜨 도산대로 454');
+const SHIP_NOTE_SAMPLE='샘플 택배 3,000원 · 쇼룸 픽업(리노꼴렉뜨 청담, '+PICKUP_ADDR+', '+PICKUP_HOURS+') 시 배송비 없음 · 방문 전 연락';
+function shipInfo(){const el=document.getElementById('shipInfo');const on=sampleOnly()&&shipSel().id==='PICKUP';el.hidden=!on;if(on)el.innerHTML=`🏬 <b>리노꼴렉뜨 청담</b> · ${esc(PICKUP_ADDR)} · ${esc(PICKUP_HOURS)} · <a href="${PICKUP_MAP}" target="_blank" rel="noopener">지도 ↗</a>`;}
 const sampleOnly=()=>lastRows.length>0&&lastRows.every(({it})=>it.category==='샘플');
 const shipList=()=>sampleOnly()?SHIP_SAMPLE:SHIP;
 const shipNote=()=>sampleOnly()?SHIP_NOTE_SAMPLE:SHIP_NOTE;
@@ -175,7 +180,7 @@ function fillShip(){
   sel.innerHTML=L.map(x=>{const [nm,rest]=esc(x.label).split(' (');return `<option value="${x.id}">${x.icon||'🚚'} ${nm}${x.fee?' '+fmt(x.fee)+'원':''}${rest?' · '+rest.replace(/\)$/,''):''}</option>`;}).join('');
   try{const sv=localStorage.getItem('ship'+(mode==='S'?'_s':''));if(sv&&L.some(x=>x.id===sv))sel.value=sv;}catch(e){}
 }
-document.getElementById('f_ship').addEventListener('change',()=>{try{localStorage.setItem('ship'+(sampleOnly()?'_s':''),document.getElementById('f_ship').value);}catch(e){}buildText();});
+document.getElementById('f_ship').addEventListener('change',()=>{try{localStorage.setItem('ship'+(sampleOnly()?'_s':''),document.getElementById('f_ship').value);}catch(e){}buildText();shipInfo();});
 const ORDER=['우드보드 19T','우드보드 10T','우드 엣지 24mm','우드 엣지 50mm','패브릭 보드 19T','패브릭 보드 10T','샘플'];
 const natural=(a,b)=>a.localeCompare(b,'ko',{numeric:true});
 let lastRows=[],data=[],cart={},cat='우드보드 19T',cartOpen=false;
@@ -322,7 +327,7 @@ function openDlg(mode){
   const b=document.getElementById('send');b.hidden=!submit;b.disabled=false;b.textContent="주문/접수하기";
   if(submit){const c=LS('contact')||{};for(const id of ['f_company','f_contact','f_addr']){if(c[id]&&!document.getElementById(id).value)document.getElementById(id).value=c[id];}}
   if(submit&&!ENDPOINT){msg.className='msg err';msg.textContent='온라인 접수가 아직 연결되지 않았습니다. 아래 내용을 복사 또는 PDF 공유로 보내주세요.';b.hidden=true;}
-  buildText();lockBody();dlg.showModal();
+  buildText();shipInfo();lockBody();dlg.showModal();
   if(submit&&!document.getElementById('f_company').value)document.getElementById('f_company').focus();
 }
 quote.onclick=()=>openDlg('quote');
